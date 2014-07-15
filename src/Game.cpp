@@ -46,6 +46,8 @@ bool Game::start() ///Démarrage du jeu
 
     gameLoop();
 
+    m_networkThread.wait();
+
     return true;
 }
 
@@ -55,7 +57,7 @@ bool Game::connect()
 
     if(m_tcpSocket.connect(m_serverAdress,54002,sf::seconds(5)) != sf::Socket::Done)
     {
-        std::cout << "Serveur non existant. Le programme va se fermer...";
+        cout << "Serveur non existant. Le programme va se fermer...";
         sf::sleep(sf::seconds(3));
         return false;
     }
@@ -175,11 +177,12 @@ void Game::networkLoop()
     {
         ///Envoi de la position
         sf::Packet ownPacket;
+        ownPacket << sf::Uint32(1); //Id du paquet
         ownPacket << m_player;
 
         if(m_tcpSocket.send(ownPacket) != sf::Socket::Done)
         {
-            std::cout << "Erreur lors de l'envoi du paquet" << std::endl;
+            cout << "Erreur lors de l'envoi du paquet" << endl;
         }
 
         ///Réception des infos du serveur
@@ -199,11 +202,20 @@ void Game::networkLoop()
         else
         {}
     }
+    //On envoie au serveur qu'on se déconnecte
+
+    sf::Packet discoPacket;
+    discoPacket << sf::Uint32(0);
+    if(m_tcpSocket.send(discoPacket) != sf::Socket::Done)
+    {
+        cout << "Erreur lors de l'envoi du paquet de déconnexion" << endl;
+    }
+
+    m_tcpSocket.disconnect();
 }
 
 void Game::exit()
 {
     m_window.close();
-    m_tcpSocket.disconnect();
     m_running = false;
 }

@@ -25,9 +25,6 @@ void Server::launch()
 
 void Server::main()
 {
-    float x = 0;
-    float y = 0;
-
     sf::SocketSelector selector;
     sf::TcpListener listener;
     listener.listen(m_port);
@@ -67,36 +64,12 @@ void Server::main()
 
                     if(selector.isReady(client))
                     {
-                        sf::Packet posPacket;
-
-                        if(client.receive(posPacket) == sf::Socket::Done)
-                        {
-                            sf::Color color;
-                            posPacket >> x >> y >> color.r >> color.g >> color.b;
-
-                            SPlayer& player = *players[i];
-
-                            player.setPosition(x,y);
-                            player.setColor(color);
-                        }
-
-                        //On prépare le packet à envoyer au client
                         sf::Packet packet;
-                        packet << players.size()-1; //
-                        for(int j = 0; j < players.size(); j++)
-                        {
-                            if(j!=i) // On envoie les infos des autres joueurs sauf celle du joueur qui va les recevoir.
-                            {
-                                SPlayer &player = *players[j];
-                                float x = player.getPosition().x;
-                                float y = player.getPosition().y;
-                                sf::Color color = player.getColor();
-                                packet << x << y << color.r << color.g << color.b;
-                            }
-                        }
 
-                        //On envoie le packet
-                        client.send(packet);
+                        if(client.receive(packet) == sf::Socket::Done)
+                        {
+                            receiveTCP(packet, i);
+                        }
                     }
                 }
             }
@@ -119,7 +92,7 @@ void Server::command()
         }
         else if(command == "infos")
         {
-            cout << "Positions des joueurs : " << endl;
+            cout << "Infos sur les joueurs : " << endl;
 
             for(int i = 0; i < players.size(); i++)
             {
@@ -145,10 +118,43 @@ bool Server::receiveTCP(sf::Packet& packet, int const& clientid)
     sf::Uint32 id;
     packet >> id;
 
+    cout << "Id du paquet " << id << endl;
+
     switch(id)
     {
     case 0: //Packet qui... ?
         disconnect(clientid);
+        break;
+
+    case 1:
+        sf::TcpSocket& client = *clients[clientid];
+
+        sf::Color color;
+        float x = 0;
+        float y = 0;
+        packet >> x >> y >> color.r >> color.g >> color.b;
+        SPlayer& player = *players[clientid];
+
+        player.setPosition(x,y);
+        player.setColor(color);
+
+        //On prépare le packet à envoyer au client
+        sf::Packet packet;
+        packet << players.size()-1; //
+        for(int j = 0; j < players.size(); j++)
+        {
+            if(j!=clientid) // On envoie les infos des autres joueurs sauf celle du joueur qui va les recevoir.
+            {
+                SPlayer &player = *players[j];
+                float x = player.getPosition().x;
+                float y = player.getPosition().y;
+                sf::Color color = player.getColor();
+                packet << x << y << color.r << color.g << color.b;
+            }
+        }
+
+        //On envoie le packet
+        client.send(packet);
         break;
     }
 }
@@ -165,6 +171,8 @@ bool Server::isRunning()
 
 void Server::disconnect(int const& clientid)
 {
+    cout << "Player " << clientid << " is disconnecting!" << endl;
+
     //On déconnecte le client et on détruit le socket et le joueur (il gardera sa place dans la liste des ids néanmoins)
     sf::TcpSocket* socket = clients[clientid];
     socket->disconnect();
