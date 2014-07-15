@@ -202,16 +202,29 @@ void Game::networkLoop()
 
         ///Réception des infos du serveur
         sf::Packet packet;
-        int nbPlayers;
         if(m_tcpSocket.receive(packet) == sf::Socket::Done)
         {
-            packet >> nbPlayers;
-            m_players.clear();
-            for(int i = 0; i < nbPlayers; i++)
+            sf::Uint32 id;
+            packet >> id;
+            switch(id)
             {
-                Player player("n/a",0, &m_planet);
-                packet >> player;
-                m_players.push_back(player);
+            case 0:
+                //Serveur shutdown
+                cout << "Le serveur a demandé la fermeture du client!" << endl;
+                exit();
+                break;
+
+            case 1:
+                int nbPlayers;
+                packet >> nbPlayers;
+                m_players.clear();
+                for(int i = 0; i < nbPlayers; i++)
+                {
+                    Player player("n/a",0, &m_planet);
+                    packet >> player;
+                    m_players.push_back(player);
+                }
+                break;
             }
         }
         else

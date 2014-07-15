@@ -19,7 +19,6 @@
 
 /**
  TODO :
-  - Serveur qui contient les noms des joueurs.
   - Récupération de l'adresse du serveur sur mon serveur perso ovh.
   - Changer le zoom sur la fenêtre grâce à la molette de la souris.
   - Afficher le nom du joueur au dessus de son "personnage".

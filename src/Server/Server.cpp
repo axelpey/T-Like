@@ -133,6 +133,7 @@ bool Server::receiveTCP(sf::Packet& packet, int const& clientid)
 
         //On prépare le packet à envoyer au client
         sf::Packet packet;
+        packet << sf::Uint32(1); //ID Packet
         packet << players.size()-1; //
         for(int j = 0; j < players.size(); j++)
         {
@@ -151,6 +152,16 @@ bool Server::receiveTCP(sf::Packet& packet, int const& clientid)
 
 void Server::stop()
 {
+    //Message d'arrêt sur le chat
+
+    for(int i = 0; i < clients.size(); --i)
+    {
+        sf::TcpSocket& socket = *clients[0];
+        sf::Packet srvSHUTDOWNPacket;
+        srvSHUTDOWNPacket << sf::Uint32(0); //ID packet qui signifie shutdown
+        socket.send(srvSHUTDOWNPacket);
+    }
+
     m_run = false;
 }
 
