@@ -19,12 +19,14 @@
 
 /**
  TODO :
-  - Packets avec int ID dans le server et dans le client.
-  - Adresse du serveur et nom du personnage dans un fichier texte adresse.txt
+  - Serveur qui contient les noms des joueurs.
+  - Récupération de l'adresse du serveur sur mon serveur perso ovh.
   - Changer le zoom sur la fenêtre grâce à la molette de la souris.
   - Afficher le nom du joueur au dessus de son "personnage".
   - Créer un simple chat en bas à gauche / Canal de packet : un nouveau TCP.
 */
+
+using namespace std;
 
 void server(int port);
 
@@ -36,7 +38,7 @@ int main()
 
     if(SERVER==2)
     {
-        std::cout << "Seul le serveur a été allumé" << std::endl;
+        cout << "Seul le serveur a été allumé" << endl;
         serverThread.launch();
         serverThread.wait();
         return 0;
@@ -51,6 +53,8 @@ int main()
 
     if(!instance.start())
         return EXIT_FAILURE;
+
+    serverThread.wait();
 
     return 0;
 }

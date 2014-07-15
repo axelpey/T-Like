@@ -15,9 +15,24 @@ Game::Game() : m_window(sf::VideoMode(1280, 720), "Initialisation..."),
     cout << "Adresse du serveur : ";
     cin >> ip;
     cout << endl;
-    cout << "Nom du joueur : ";
-    cin >> name;
-    cout << endl;
+
+    ifstream ifs("data/player.txt");
+    if(ifs)
+    {
+        ifs >> name;
+    }
+    else
+    {
+        cout << "ifs failed" << endl;
+        ofstream ofs("data/player.txt");
+        if(ofs)
+            ofs << "default";
+        else
+            cout << "ofs failed" << endl;
+        ofs.close();
+        name = "default";
+    }
+    ifs.close();
 
     m_planet = Planet(18, sf::Vector2f(50,30));
     m_player = Player(name, 1, &m_planet);

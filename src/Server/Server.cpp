@@ -97,7 +97,7 @@ void Server::command()
             for(int i = 0; i < players.size(); i++)
             {
                 SPlayer& player = *players[i];
-                cout << " - Player " << i+1 << " est à la position x=" << player.getPosition().x << " et y=" << player.getPosition().y
+                cout << " - Player " << i+1 << " avec le nom " << player.getName() << " est à la position x=" << player.getPosition().x << " et y=" << player.getPosition().y
                 << " avec la couleur " << player.getColor().r << "," << player.getColor().g << "," << player.getColor().b << endl;
             }
         }
@@ -118,8 +118,6 @@ bool Server::receiveTCP(sf::Packet& packet, int const& clientid)
     sf::Uint32 id;
     packet >> id;
 
-    cout << "Id du paquet " << id << endl;
-
     switch(id)
     {
     case 0: //Packet qui... ?
@@ -129,14 +127,9 @@ bool Server::receiveTCP(sf::Packet& packet, int const& clientid)
     case 1:
         sf::TcpSocket& client = *clients[clientid];
 
-        sf::Color color;
-        float x = 0;
-        float y = 0;
-        packet >> x >> y >> color.r >> color.g >> color.b;
         SPlayer& player = *players[clientid];
 
-        player.setPosition(x,y);
-        player.setColor(color);
+        packet >> player;
 
         //On prépare le packet à envoyer au client
         sf::Packet packet;
@@ -146,10 +139,7 @@ bool Server::receiveTCP(sf::Packet& packet, int const& clientid)
             if(j!=clientid) // On envoie les infos des autres joueurs sauf celle du joueur qui va les recevoir.
             {
                 SPlayer &player = *players[j];
-                float x = player.getPosition().x;
-                float y = player.getPosition().y;
-                sf::Color color = player.getColor();
-                packet << x << y << color.r << color.g << color.b;
+                packet << player;
             }
         }
 

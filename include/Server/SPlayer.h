@@ -16,14 +16,22 @@ class SPlayer
 
         void setPosition(sf::Vector2f pos);
         void setPosition(int x, int y);
+        void setColor(sf::Color color);
+        void setName(std::string name);
+
         sf::Vector2f getPosition();
         sf::Color getColor();
-        void setColor(sf::Color color);
+        std::string getName();
     protected:
     private:
+        std::string m_name;
         sf::Color m_color;
         sf::Vector2f relativePos;
         //SPlanet* planet;
 };
+
+sf::Packet& operator <<(sf::Packet& packet, SPlayer& player);
+
+sf::Packet& operator >>(sf::Packet& packet, SPlayer& player);
 
 #endif // SPLAYER_H

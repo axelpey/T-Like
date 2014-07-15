@@ -87,13 +87,26 @@ sf::Color Player::getColor()
     return m_color;
 }
 
+string Player::getName()
+{
+    return m_name;
+}
+
+void Player::setName(string const& name)
+{
+    m_name = name;
+}
+
 sf::Packet& operator <<(sf::Packet& packet, Player& player)
 {
-    return packet << player.getRelativePosition().x << player.getRelativePosition().y << player.getColor().r << player.getColor().g << player.getColor().b;
+    return packet << player.getName() << player.getRelativePosition().x << player.getRelativePosition().y << player.getColor().r << player.getColor().g << player.getColor().b;
 }
 
 sf::Packet& operator >>(sf::Packet& packet, Player& player)
 {
+    string name;
+    packet >> name;
+    player.setName(name);
     float x;
     float y;
     packet >> x >> y;

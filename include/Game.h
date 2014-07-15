@@ -6,6 +6,8 @@
 #include <SFML/Window.hpp>
 #include <SFML/System.hpp>
 
+#include <fstream>
+
 #include "Player.h"
 
 class Game

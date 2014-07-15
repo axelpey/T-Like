@@ -23,11 +23,14 @@ class Player
         void goRight();
 
         void setRelativePos(sf::Vector2f const& pos);
+        void setColor(sf::Color const& color);
+        void setName(std::string const& name);
+
         sf::Vector2f getRelativePosition();
         sf::Vector2f getAbsolutePosition();
         int getAngle();
-        void setColor(sf::Color const& color);
         sf::Color getColor();
+        std::string getName();
     protected:
         sf::Vector2f relativePos2absolute();
     private:
