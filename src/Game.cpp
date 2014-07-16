@@ -209,13 +209,17 @@ void Game::networkLoop()
             switch(id)
             {
             case 0:
-                //Serveur shutdown
-                cout << "Le serveur a demandé la fermeture du client!" << endl;
-                exit();
+                {
+                    string reason;
+                    packet >> reason;
+                    //Serveur shutdown
+                    cout << "Vous avez été déconnecté du serveur. Raison : " << reason << endl;
+                    exit();
+                }
                 break;
 
             case 1:
-                int nbPlayers;
+                sf::Uint32 nbPlayers;
                 packet >> nbPlayers;
                 m_players.clear();
                 for(int i = 0; i < nbPlayers; i++)

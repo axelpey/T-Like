@@ -19,6 +19,7 @@
 
 /**
  TODO :
+  - Commande /kick qui kicke un client (nécessite que le paquet 0 prenne en plus un message qui contient l'explication du kick) (Nécessite de refaire le sys de commandes
   - Récupération de l'adresse du serveur sur mon serveur perso ovh.
   - Changer le zoom sur la fenêtre grâce à la molette de la souris.
   - Afficher le nom du joueur au dessus de son "personnage".

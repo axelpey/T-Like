@@ -134,7 +134,9 @@ bool Server::receiveTCP(sf::Packet& packet, int const& clientid)
         //On prépare le packet à envoyer au client
         sf::Packet packet;
         packet << sf::Uint32(1); //ID Packet
-        packet << players.size()-1; //
+        sf::Uint32 nbPlayers;
+        nbPlayers = players.size()-1;
+        packet << nbPlayers; //
         for(int j = 0; j < players.size(); j++)
         {
             if(j!=clientid) // On envoie les infos des autres joueurs sauf celle du joueur qui va les recevoir.
@@ -158,7 +160,8 @@ void Server::stop()
     {
         sf::TcpSocket& socket = *clients[0];
         sf::Packet srvSHUTDOWNPacket;
-        srvSHUTDOWNPacket << sf::Uint32(0); //ID packet qui signifie shutdown
+        srvSHUTDOWNPacket << sf::Uint32(0); //ID packet qui demande la déconnexion du client.
+        srvSHUTDOWNPacket << string("Extinction du serveur.");
         socket.send(srvSHUTDOWNPacket);
     }
 
