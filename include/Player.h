@@ -32,7 +32,7 @@ class Player
         sf::Color getColor();
         std::string getName();
     protected:
-        sf::Vector2f relativePos2absolute();
+        sf::Vector2f relativePos2absolute(sf::Vector2f relativePosition);
     private:
         std::string m_name;
         Planet* planet;

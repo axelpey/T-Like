@@ -3,7 +3,7 @@
 using namespace std;
 
 Game::Game() : m_window(sf::VideoMode(1280, 720), "Initialisation..."),
-    m_zoom(10),
+    m_zoom(20),
     m_visibleArea(0, 0, m_window.getSize().x/m_zoom, m_window.getSize().y/m_zoom),
     m_view(m_visibleArea),
     m_running(false),

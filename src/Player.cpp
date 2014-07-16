@@ -27,21 +27,46 @@ Player::~Player()
     //dtor
 }
 
-sf::Vector2f Player::relativePos2absolute()
+sf::Vector2f Player::relativePos2absolute(sf::Vector2f relativePosition)
 {
     //Trigo à faire
-    absolutePos.y = (planet->getCenterPoint().y)-sinf((relativePos.x*PI/180)+PI/2)*(planet->getCenterShape().getRadius()+relativePos.y+rectangle.getSize().y);
-    absolutePos.x = (planet->getCenterPoint().x)+cosf((relativePos.x*PI/180)-PI/2)*(planet->getCenterShape().getRadius()+relativePos.y+rectangle.getSize().y);
+    sf::Vector2f absolutePosition;
+    absolutePosition.y = (planet->getCenterPoint().y)-sinf((relativePosition.x*PI/180)+PI/2)*(planet->getCenterShape().getRadius()+relativePosition.y+rectangle.getSize().y);
+    absolutePosition.x = (planet->getCenterPoint().x)+cosf((relativePosition.x*PI/180)-PI/2)*(planet->getCenterShape().getRadius()+relativePosition.y+rectangle.getSize().y);
 
-    return absolutePos;
+    return absolutePosition;
 }
 
 void Player::render(sf::RenderWindow* window)
 {
-    absolutePos = relativePos2absolute();
+    sf::Text nameText;
+    float csize = 100;
+    nameText.setCharacterSize(csize);
+    nameText.setScale(1/csize,1/csize);
+    nameText.setString(m_name);
+    nameText.setColor(sf::Color::White);
+    sf::Font calibri;
+    if(!calibri.loadFromFile("data/calibri.ttf"))
+    {
+        cout << "Erreur lors du chargement de la police calibri" << endl;
+    }
+    else
+    {
+        nameText.setFont(calibri);
+    }
+
+    sf::Vector2f namePosition;
+    namePosition.x = relativePos.x;
+    namePosition.y = relativePos.y + 2;
+    namePosition = relativePos2absolute(namePosition);
+
+    absolutePos = relativePos2absolute(relativePos);
     rectangle.setPosition(absolutePos.x,absolutePos.y);
     rectangle.setRotation(relativePos.x);
+    nameText.setPosition(namePosition.x,namePosition.y);
+    nameText.setRotation(relativePos.x);
     window->draw(rectangle);
+    window->draw(nameText);
     //std::cout << "Player pos relative x = " << relativePos.x << " and relative y = " << relativePos.y << std::endl;
     //std::cout << "Player pos absolute x = " << absolutePos.x << " and absolute y = " << absolutePos.y << std::endl;
 }
