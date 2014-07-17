@@ -184,6 +184,8 @@ bool Game::gameLoop()
         //End display
         m_window.display();
     }
+
+    m_window.close();
 }
 
 void Game::networkLoop()
@@ -206,16 +208,14 @@ void Game::networkLoop()
         {
             sf::Uint32 id;
             packet >> id;
+            string reason;
             switch(id)
             {
             case 0:
-                {
-                    string reason;
-                    packet >> reason;
-                    //Serveur shutdown
-                    cout << "Vous avez été déconnecté du serveur. Raison : " << reason << endl;
-                    exit();
-                }
+                packet >> reason;
+                //Serveur shutdown
+                cout << "Vous avez été déconnecté du serveur. Raison : " << reason << endl;
+                exit();
                 break;
 
             case 1:
@@ -248,6 +248,5 @@ void Game::networkLoop()
 
 void Game::exit()
 {
-    m_window.close();
     m_running = false;
 }

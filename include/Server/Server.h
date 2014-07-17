@@ -42,6 +42,7 @@ class Server
         bool receiveUDP(sf::Packet& packet, int const& clientid);
         bool receiveTCP(sf::Packet& packet, int const& clientid);
 
+        void kick(int const& clientid);
         void disconnect(int const& clientid);
     protected:
     private:

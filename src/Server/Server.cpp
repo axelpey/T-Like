@@ -81,9 +81,21 @@ void Server::command()
 {
     while(m_run)
     {
-        string command = "";
+        string input = "";
+        string command;
+        string arg;
 
-        cin >> command;
+        getline(cin, input);
+
+        if(input.find(" ")!=string::npos)
+        {
+            command = input.substr(0,input.find((" ")));
+            arg = input.substr(input.find(" ")+1);
+        }
+        else
+        {
+            command = input;
+        }
 
         if(command == "stop")
         {
@@ -100,6 +112,25 @@ void Server::command()
                 cout << " - Player " << i+1 << " avec le nom " << player.getName() << " est à la position x=" << player.getPosition().x << " et y=" << player.getPosition().y
                 << " avec la couleur " << player.getColor().r << "," << player.getColor().g << "," << player.getColor().b << endl;
             }
+        }
+        else if(command == "kick")
+        {
+            if(arg == "")
+            {
+                cout << "Aucun nom de joueur renseigné." << endl;
+            }
+            for(int i = 0; i < players.size(); i++)
+            {
+                SPlayer& player = *players[i];
+                if(player.getName() == arg)
+                {
+                    kick(i);
+                }
+            }
+        }
+        else if(command == "help")
+        {
+
         }
         else
         {
@@ -171,6 +202,15 @@ void Server::stop()
 bool Server::isRunning()
 {
     return m_run;
+}
+
+void Server::kick(int const& clientid)
+{
+    sf::TcpSocket* socket = clients[clientid];
+    sf::Packet kickPacket;
+    kickPacket << sf::Uint32(0);
+    kickPacket << string("Vous avez été expulsé du serveur!");
+    socket->send(kickPacket);
 }
 
 void Server::disconnect(int const& clientid)
