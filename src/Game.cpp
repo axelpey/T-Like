@@ -34,7 +34,7 @@ Game::Game() : m_window(sf::VideoMode(1280, 720), "Initialisation..."),
     }
     ifs.close();
 
-    m_planet = Planet(18, sf::Vector2f(50,30));
+    m_planet = Planet(45, sf::Vector2f(50,30));
     m_player = Player(name, 1, &m_planet);
 
     m_window.setView(m_view);

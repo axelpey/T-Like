@@ -100,13 +100,13 @@ void Planet::render(sf::RenderWindow* window)
             {
             case 1:
                 block.setFillColor(sf::Color(102,51,0));
-                block.setOutlineThickness(-0.01);
+                block.setOutlineThickness(-0.001);
                 block.setOutlineColor(sf::Color::Black);
                 break;
 
             case 2:
                 block.setFillColor(sf::Color(192,192,192));
-                block.setOutlineThickness(-0.01);
+                block.setOutlineThickness(-0.001);
                 block.setOutlineColor(sf::Color::Black);
                 break;
 
