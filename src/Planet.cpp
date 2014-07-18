@@ -49,6 +49,12 @@ void Planet::render(sf::RenderWindow* window)
 {
     window->draw(getCenterShape());
 
+    float alpha = (360/circonference);
+    alpha = (alpha*PI/180)/2;
+    float const sinalpha = sinf(alpha);
+    float const cosalpha = cosf(alpha);
+    float const sinalphadiv2 = sinf(alpha/2);
+
     for(int i = 0; i < blocks.size(); i++)
     {
         vector < int > const& column = blocks[i];
@@ -85,17 +91,13 @@ void Planet::render(sf::RenderWindow* window)
             }
 
             //La forme
-            float alpha = (360/circonference);
-            alpha = alpha*PI/180;
-            alpha = alpha/2;
-            float DC = 2*(centerRadius+j)*sinf(alpha/2);
-            float EC = DC * sinf(alpha);
-            float ED = DC * cosf(alpha);
-            float sinff = sin(alpha);
+            float DC = 2*(centerRadius+j)*sinalphadiv2;
+            float EC = DC * sinalpha;
+            float ED = DC * cosalpha;
 
-            float AB =  2*(centerRadius+1+j)*sinf(alpha/2);
-            float FB = AB * sinf(alpha);
-            float FA = AB * cosf(alpha);
+            float AB =  2*(centerRadius+1+j)*sinalphadiv2;
+            float FB = AB * sinalpha;
+            float FA = AB * cosalpha;
 
             float xA = 0;
             float yA = 0;
