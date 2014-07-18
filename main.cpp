@@ -22,7 +22,7 @@
   - Récupération de l'adresse du serveur sur mon serveur perso ovh.
   - Changer le zoom sur la fenêtre grâce à la molette de la souris.
   - Créer un simple chat en bas à gauche / Canal de packet : un nouveau TCP.
-  - Cliquer sur un endroit pour créer une nouvelle brique :
+  - Cliquer sur un endroit pour créer une nouvelle brique / Casser une brique :
    - Récupérer position absolue de la souris sur l'écran.
    - La transformer en position relative par rapport au centre de la planète (inverse de relativePos2absolute())
    - Déterminer quel bloc est concerné par cette position relative via : sf::Vector2f getBlock(relativepos) où le vecteur représente sa position dans le tableau des blocs de la planète.

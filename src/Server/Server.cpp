@@ -79,6 +79,7 @@ void Server::main()
 
 void Server::command()
 {
+    cin.ignore();
     while(m_run)
     {
         string input = "";

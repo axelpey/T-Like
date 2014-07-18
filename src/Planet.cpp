@@ -51,17 +51,19 @@ void Planet::render(sf::RenderWindow* window)
 
     for(int i = 0; i < blocks.size(); i++)
     {
-        vector < int > column = blocks[i];
+        vector < int > const& column = blocks[i];
 
         for(int j = 0; j < height; j++)
         {
+            if(column[j] == 0)
+                break;
             //4 Choses à régler :
             sf::ConvexShape block;
 
             block.setPointCount(4);
 
             //Design du bloc en fonction de son type
-            switch(blocks[i][j])
+            switch(column[j])
             {
             case 0:
                 block.setFillColor(sf::Color::Transparent);
