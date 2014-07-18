@@ -7,6 +7,7 @@
 #include <SFML/System.hpp>
 
 #include <fstream>
+#include <sstream>
 
 #include "Player.h"
 

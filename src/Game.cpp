@@ -86,6 +86,8 @@ bool Game::gameLoop()
 {
     bool rightPressed = false;
     bool leftPressed = false;
+    int fps;
+    sf::Clock clock;
 
     while (m_running)
     {
@@ -180,6 +182,17 @@ bool Game::gameLoop()
         view.setRotation(m_player.getAngle());
         view.setCenter(m_player.getAbsolutePosition().x, m_player.getAbsolutePosition().y);
         m_window.setView(view);
+
+        fps++;
+        if(clock.getElapsedTime().asSeconds() >= 1)
+        {
+            stringstream ss;
+            ss << fps;
+            string str_fps = ss.str();
+            m_window.setTitle("Connected to " + m_tcpSocket.getRemoteAddress().toString() + ". FPS = " + str_fps);
+            fps = 0;
+            clock.restart();
+        }
 
         //End display
         m_window.display();
