@@ -9,6 +9,7 @@ Player::Player()
 
 Player::Player(string name, int r_weight, Planet* r_planet)
 {
+    m_speed = 0.5;
     m_name = name;
     rectangle = sf::RectangleShape(sf::Vector2f(1,2));
     char r = rand()%255;
@@ -39,6 +40,10 @@ sf::Vector2f Player::relativePos2absolute(sf::Vector2f relativePosition)
 
 void Player::render(sf::RenderWindow* window)
 {
+    if(relativePos.x > 360)
+    {
+        relativePos.x = relativePos.x - 360;
+    }
     sf::Text nameText;
     float csize = 100;
     nameText.setCharacterSize(csize);
@@ -73,11 +78,13 @@ void Player::render(sf::RenderWindow* window)
 
 void Player::goLeft()
 {
+    //relativePos.x-=m_speed;
     relativePos.x--;
 }
 
 void Player::goRight()
 {
+    //relativePos.x+=m_speed;
     relativePos.x++;
 }
 

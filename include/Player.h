@@ -39,6 +39,7 @@ class Player
         sf::Vector2f absolutePos;
         sf::Vector2f relativePos; //x = position autour de la planète (en degrés) y = hauteur
         int weight;
+        float m_speed;
         sf::Color m_color;
         sf::RectangleShape rectangle; //Le perso est juste un rectangle
 };
