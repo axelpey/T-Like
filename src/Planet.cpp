@@ -55,13 +55,40 @@ void Planet::render(sf::RenderWindow* window)
     float const cosalpha = cosf(alpha);
     float const sinalphadiv2 = sinf(alpha/2);
 
-    for(int i = 0; i < blocks.size(); i++)
+    for(int j = 0; j < height; j++)
     {
-        vector < int > const& column = blocks[i];
+        //La forme
+        float DC = 2*(centerRadius+j)*sinalphadiv2;
+        float EC = DC * sinalpha;
+        float ED = DC * cosalpha;
 
-        for(int j = 0; j < height; j++)
+        float AB =  2*(centerRadius+1+j)*sinalphadiv2;
+        float FB = AB * sinalpha;
+        float FA = AB * cosalpha;
+
+        sf::Vector2f p1,p2,p3,p4;
+
+        p1.x = 0;
+        p1.y = 0;
+        p4.x = 0;
+        p4.y = 1;
+        p2.x = p1.x + 2*FA;
+        p2.y = p1.y + 2*FB;
+        p3.x = p4.x + 2*ED;
+        p3.y = p4.y + 2*EC;
+
+        /*float xA = 0;
+        float yA = 0;
+        float xD = 0;
+        float yD = 1;
+        float xB = xA + 2*FA;
+        float yB = yA + 2*FB;
+        float xC = xD + 2*ED;
+        float yC = yD + 2*EC;*/
+
+        for(int i = 0; i < blocks.size(); i++)
         {
-            if(column[j] == 0)
+            if(blocks[i][j] == 0)
                 break;
             //4 Choses à régler :
             sf::ConvexShape block;
@@ -69,7 +96,7 @@ void Planet::render(sf::RenderWindow* window)
             block.setPointCount(4);
 
             //Design du bloc en fonction de son type
-            switch(column[j])
+            switch(blocks[i][j])
             {
             case 0:
                 block.setFillColor(sf::Color::Transparent);
@@ -90,28 +117,10 @@ void Planet::render(sf::RenderWindow* window)
                 break;
             }
 
-            //La forme
-            float DC = 2*(centerRadius+j)*sinalphadiv2;
-            float EC = DC * sinalpha;
-            float ED = DC * cosalpha;
-
-            float AB =  2*(centerRadius+1+j)*sinalphadiv2;
-            float FB = AB * sinalpha;
-            float FA = AB * cosalpha;
-
-            float xA = 0;
-            float yA = 0;
-            float xD = 0;
-            float yD = 1;
-            float xB = xA + 2*FA;
-            float yB = yA + 2*FB;
-            float xC = xD + 2*ED;
-            float yC = yD + 2*EC;
-
-            block.setPoint(0,sf::Vector2f(xA,yA));
-            block.setPoint(1,sf::Vector2f(xB,yB));
-            block.setPoint(2,sf::Vector2f(xC,yC));
-            block.setPoint(3,sf::Vector2f(xD,yD));
+            block.setPoint(0,p1);
+            block.setPoint(1,p2);
+            block.setPoint(2,p3);
+            block.setPoint(3,p4);
 
             //La position
             //Le point 0 donc A est l'origine normalement

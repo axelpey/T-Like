@@ -38,7 +38,6 @@ Game::Game() : m_window(sf::VideoMode(1280, 720), "Initialisation..."),
     m_player = Player(name, 1, &m_planet);
 
     m_window.setView(m_view);
-    m_window.setVerticalSyncEnabled(true);
 
     m_serverAdress = sf::IpAddress(ip);
 }
@@ -182,6 +181,8 @@ bool Game::gameLoop()
         view.setRotation(m_player.getAngle());
         view.setCenter(m_player.getAbsolutePosition().x, m_player.getAbsolutePosition().y);
         m_window.setView(view);
+
+///-------------------------------------------Affichage des FPS------------------------------------------------------------------------------------------///
 
         fps++;
         if(clock.getElapsedTime().asSeconds() >= 1)
