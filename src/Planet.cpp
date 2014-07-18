@@ -25,7 +25,7 @@ Planet::Planet(int r_mainRadius, sf::Vector2f r_position)
 void Planet::generatePlanet()
 {
     circonference = 2*PI*mainRadius;
-    blocks = vector < vector < int > >(circonference, vector < int > (height, 0));
+    m_blocks = vector < vector < int > >(circonference, vector < int > (height, 0));
 
     for(int i = 0; i < circonference; i++)
     {
@@ -41,7 +41,7 @@ void Planet::generatePlanet()
                 column.push_back(0);
         }
 
-        blocks[i] = column;
+        m_blocks[i] = column;
     }
 }
 
@@ -86,24 +86,18 @@ void Planet::render(sf::RenderWindow* window)
         float xC = xD + 2*ED;
         float yC = yD + 2*EC;*/
 
-        for(int i = 0; i < blocks.size(); i++)
+        for(int i = 0; i < m_blocks.size(); i++)
         {
-            if(blocks[i][j] == 0)
-                break;
+            if(m_blocks[i][j] == 0)
+                continue;
             //4 Choses à régler :
             sf::ConvexShape block;
 
             block.setPointCount(4);
 
             //Design du bloc en fonction de son type
-            switch(blocks[i][j])
+            switch(m_blocks[i][j])
             {
-            case 0:
-                block.setFillColor(sf::Color::Transparent);
-                //block.setOutlineThickness(-0.01); Pas de bordure pour l'air
-                block.setOutlineColor(sf::Color::Black);
-                break;
-
             case 1:
                 block.setFillColor(sf::Color(102,51,0));
                 block.setOutlineThickness(-0.01);
@@ -115,6 +109,12 @@ void Planet::render(sf::RenderWindow* window)
                 block.setOutlineThickness(-0.01);
                 block.setOutlineColor(sf::Color::Black);
                 break;
+
+            default:
+                block.setFillColor(sf::Color::Red);
+                //block.setOutlineThickness(-0.01); Pas de bordure pour l'air
+                block.setOutlineColor(sf::Color::Black);
+                break;
             }
 
             block.setPoint(0,p1);
@@ -124,8 +124,8 @@ void Planet::render(sf::RenderWindow* window)
 
             //La position
             //Le point 0 donc A est l'origine normalement
-            float posx = position.x-cos((2*PI/blocks.size())*i+PI/2)*(centerRadius+j+1);
-            float posy = position.y-sin((2*PI/blocks.size())*i+PI/2)*(centerRadius+j+1);
+            float posx = position.x-cos((2*PI/m_blocks.size())*i+PI/2)*(centerRadius+j+1);
+            float posy = position.y-sin((2*PI/m_blocks.size())*i+PI/2)*(centerRadius+j+1);
 
             block.setPosition(posx,posy);
 
@@ -138,6 +138,16 @@ void Planet::render(sf::RenderWindow* window)
             window->draw(block);
         }
     }
+}
+
+void Planet::setBlock(sf::Vector2i position, int const& blockid)
+{
+    m_blocks[position.x][position.y] = blockid;
+}
+
+int Planet::getBlock(sf::Vector2i position)
+{
+    return m_blocks[position.x][position.y];
 }
 
 int Planet::getRadius()

@@ -19,7 +19,7 @@ Player::Player(string name, int r_weight, Planet* r_planet)
 
     weight = r_weight;
     planet = r_planet;
-    relativePos = sf::Vector2f(10,planet->getRadius()/3+1); ///Debug
+    relativePos = sf::Vector2f(0,planet->getRadius()/3+1); ///Debug
 }
 
 Player::~Player()

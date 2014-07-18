@@ -15,6 +15,8 @@ class Planet
         virtual ~Planet();
 
         void render(sf::RenderWindow*);
+        void setBlock(sf::Vector2i position, int const& blockid);
+        int getBlock(sf::Vector2i position);
 
         sf::CircleShape getCenterShape();
         int getRadius();
@@ -32,7 +34,7 @@ class Planet
         sf::CircleShape centerShape;
         sf::Vector2f position;
 
-        std::vector < std::vector <int> > blocks;
+        std::vector < std::vector <int> > m_blocks;
 };
 
 #endif // PLANET_H

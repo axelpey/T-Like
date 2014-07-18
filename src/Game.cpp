@@ -38,6 +38,7 @@ Game::Game() : m_window(sf::VideoMode(1280, 720), "Initialisation..."),
     m_player = Player(name, 1, &m_planet);
 
     m_window.setView(m_view);
+    m_window.setFramerateLimit(60);
 
     m_serverAdress = sf::IpAddress(ip);
 }
@@ -165,6 +166,7 @@ bool Game::gameLoop()
 ///--------------------------------------Render----------------------------------------------------------------------------------------------------------///
 
         m_window.clear();
+        m_planet.setBlock(sf::Vector2i(4,8),2);
 
         //Render planet
         m_planet.render(&m_window);
