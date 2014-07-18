@@ -34,7 +34,7 @@ Game::Game() : m_window(sf::VideoMode(1280, 720), "Initialisation..."),
     }
     ifs.close();
 
-    m_planet = Planet(45, sf::Vector2f(50,30));
+    m_planet = Planet(18, sf::Vector2f(0,0));
     m_player = Player(name, 1, &m_planet);
 
     m_window.setView(m_view);
@@ -143,6 +143,57 @@ bool Game::gameLoop()
                 }
                 break;
 
+///----------------------------------------------Events souris-------------------------------------------------------------------------------------------///
+
+            case sf::Event::MouseButtonPressed:
+                if(event.mouseButton.button == sf::Mouse::Right)
+                {
+                    /*
+                     Pour plus tard
+                     Récupérer position dans le monde puis la planète concernée.
+                    */
+
+                    //On détermine l'emplacement du clic par rapport au centre de la planète
+                    sf::Vector2f realPosition;
+                    realPosition.x = event.mouseButton.x/m_zoom;
+                    realPosition.y = event.mouseButton.y/m_zoom;
+
+                    float distance = sqrt(pow(realPosition.x,2) + pow(realPosition.y,2));
+                    float height = distance-(m_planet.getRadius()*2)/3;
+                    float angle = 90 + atan(realPosition.y/realPosition.x)/PI*180;
+
+                    int xint = (int)height;
+                    int yint = (angle/360) * m_planet.getCirconference();
+
+                    cout << "x=" << xint << endl;
+                    cout << "y=" << yint << endl;
+
+                    m_planet.setBlock(sf::Vector2i(yint,xint),0);
+
+                    //Bouton droit cliqué.
+                }
+                if(event.mouseButton.button == sf::Mouse::Left)
+                {
+                    //Bouton gauche cliqué.
+
+                    sf::Vector2f realPosition;
+                    realPosition.x = event.mouseButton.x/m_zoom;
+                    realPosition.y = event.mouseButton.y/m_zoom;
+
+                    float distance = sqrt(pow(realPosition.x,2) + pow(realPosition.y,2));
+                    float height = distance-(m_planet.getRadius()*2)/3;
+                    float angle = 90 + atan(realPosition.y/realPosition.x)/PI*180;
+
+                    int xint = (int)height;
+                    int yint = (angle/360) * m_planet.getCirconference();
+
+                    cout << "x=" << xint << endl;
+                    cout << "y=" << yint << endl;
+
+                    m_planet.setBlock(sf::Vector2i(yint,xint),2);
+                }
+                break;
+
 ///--------------------------------------Restes----------------------------------------------------------------------------------------------------------///
             case sf::Event::Resized:
                 // on met à jour la vue, avec la nouvelle taille de la fenêtre
@@ -180,8 +231,8 @@ bool Game::gameLoop()
 
         sf::FloatRect visibleArea(0, 0, m_window.getSize().x/m_zoom, m_window.getSize().y/m_zoom);
         sf::View view(visibleArea);
-        view.setRotation(m_player.getAngle());
-        view.setCenter(m_player.getAbsolutePosition().x, m_player.getAbsolutePosition().y);
+        //view.setRotation(m_player.getAngle());
+        //view.setCenter(m_player.getAbsolutePosition().x, m_player.getAbsolutePosition().y);
         m_window.setView(view);
 
 ///-------------------------------------------Affichage des FPS------------------------------------------------------------------------------------------///

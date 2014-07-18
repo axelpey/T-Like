@@ -32,7 +32,6 @@
   - Cliquer sur un endroit pour créer une nouvelle brique / Casser une brique :
    - Récupérer position absolue de la souris sur l'écran.
    - La transformer en position relative par rapport au centre de la planète (inverse de relativePos2absolute())
-   - Déterminer quel bloc est concerné par cette position relative via : sf::Vector2f getBlock(relativepos) où le vecteur représente sa position dans le tableau des blocs de la planète.
    - Agir en conséquence : Destruction ou placement de bloc.
   - Gestion des collisions.
   - Capacité de sauter.

@@ -160,9 +160,17 @@ sf::CircleShape Planet::getCenterShape()
     return centerShape;
 }
 
+/**
+Donne la position du centre de la planète
+*/
 sf::Vector2f Planet::getCenterPoint()
 {
     return position;
+}
+
+int Planet::getCirconference()
+{
+    return circonference;
 }
 
 Planet::~Planet()

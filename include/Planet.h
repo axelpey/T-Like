@@ -21,6 +21,7 @@ class Planet
         sf::CircleShape getCenterShape();
         int getRadius();
         sf::Vector2f getCenterPoint();
+        int getCirconference();
 
     protected:
         void generatePlanet();
