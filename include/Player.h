@@ -28,7 +28,7 @@ class Player
 
         sf::Vector2f getRelativePosition();
         sf::Vector2f getAbsolutePosition();
-        int getAngle();
+        float getAngle();
         sf::Color getColor();
         std::string getName();
     protected:

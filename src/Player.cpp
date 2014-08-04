@@ -103,7 +103,7 @@ sf::Vector2f Player::getAbsolutePosition()
     return absolutePos;
 }
 
-int Player::getAngle()
+float Player::getAngle()
 {
     return relativePos.x;
 }

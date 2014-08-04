@@ -7,62 +7,31 @@ Planet::Planet()
 
 }
 
-Planet::Planet(int r_mainRadius, sf::Vector2f r_position)
+Planet::Planet(int mainRadius, sf::Vector2f position) : SPlanet(mainRadius, position)
 {
-    mainRadius = r_mainRadius;
-    centerRadius = (mainRadius/3)*2;
-
-    position = r_position;
-    centerShape = sf::CircleShape(centerRadius);
-    centerShape.setOrigin(centerRadius,centerRadius);
-    centerShape.setPosition(position);
-
-    height = (mainRadius-centerRadius)*2;
-
-    generatePlanet();
-}
-
-void Planet::generatePlanet()
-{
-    circonference = 2*PI*mainRadius;
-    m_blocks = vector < vector < int > >(circonference, vector < int > (height, 0));
-
-    for(int i = 0; i < circonference; i++)
-    {
-        vector < int > column;
-
-        for(int j = 0; j < height; j++)
-        {
-            if(j<(height/2))
-                column.push_back(2);
-            if(j==(height/2))
-                column.push_back(1);
-            if(j>(height/2))
-                column.push_back(0);
-        }
-
-        m_blocks[i] = column;
-    }
+    centerShape = sf::CircleShape(m_centerRadius);
+    centerShape.setOrigin(m_centerRadius,m_centerRadius);
+    centerShape.setPosition(m_position);
 }
 
 void Planet::render(sf::RenderWindow* window)
 {
     window->draw(getCenterShape());
 
-    float alpha = (360/circonference);
+    float alpha = (360/m_circonference);
     alpha = (alpha*PI/180)/2;
     float const sinalpha = sinf(alpha);
     float const cosalpha = cosf(alpha);
     float const sinalphadiv2 = sinf(alpha/2);
 
-    for(int j = 0; j < height; j++)
+    for(int j = 0; j < m_height; j++)
     {
         //La forme
-        float DC = 2*(centerRadius+j)*sinalphadiv2;
+        float DC = 2*(m_centerRadius+j)*sinalphadiv2;
         float EC = DC * sinalpha;
         float ED = DC * cosalpha;
 
-        float AB =  2*(centerRadius+1+j)*sinalphadiv2;
+        float AB =  2*(m_centerRadius+1+j)*sinalphadiv2;
         float FB = AB * sinalpha;
         float FA = AB * cosalpha;
 
@@ -124,13 +93,13 @@ void Planet::render(sf::RenderWindow* window)
 
             //La position
             //Le point 0 donc A est l'origine normalement
-            float posx = position.x-cos((2*PI/m_blocks.size())*i+PI/2)*(centerRadius+j+1);
-            float posy = position.y-sin((2*PI/m_blocks.size())*i+PI/2)*(centerRadius+j+1);
+            float posx = m_position.x-cos((2*PI/m_blocks.size())*i+PI/2)*(m_centerRadius+j+1);
+            float posy = m_position.y-sin((2*PI/m_blocks.size())*i+PI/2)*(m_centerRadius+j+1);
 
             block.setPosition(posx,posy);
 
             //La rotation
-            float circonferencef = 2*PI*mainRadius;
+            float circonferencef = 2*PI*m_mainRadius;
             float angle = i*(360/circonferencef);
 
             block.setRotation(angle);
@@ -140,37 +109,9 @@ void Planet::render(sf::RenderWindow* window)
     }
 }
 
-void Planet::setBlock(sf::Vector2i position, int const& blockid)
-{
-    m_blocks[position.x][position.y] = blockid;
-}
-
-int Planet::getBlock(sf::Vector2i position)
-{
-    return m_blocks[position.x][position.y];
-}
-
-int Planet::getRadius()
-{
-    return mainRadius;
-}
-
 sf::CircleShape Planet::getCenterShape()
 {
     return centerShape;
-}
-
-/**
-Donne la position du centre de la planète
-*/
-sf::Vector2f Planet::getCenterPoint()
-{
-    return position;
-}
-
-int Planet::getCirconference()
-{
-    return circonference;
 }
 
 Planet::~Planet()
