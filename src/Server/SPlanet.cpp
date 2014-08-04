@@ -26,6 +26,8 @@ SPlanet::SPlanet(int mainRadius, sf::Vector2f position)
 
 void SPlanet::generatePlanet()
 {
+    cout << "Génération de la planète..." << endl;
+
     m_blocks = vector < vector < int > >(m_circonference, vector < int > (m_height, 0));
 
     for(int i = 0; i < m_circonference; i++)
@@ -43,7 +45,21 @@ void SPlanet::generatePlanet()
         }
 
         m_blocks[i] = column;
+
+        cout << i*100/m_circonference << "%" << endl;
     }
+}
+
+void SPlanet::loadBlocksFromVector(vector < vector <int> > blocks)
+{
+    ///On vérifie la taille du vector
+    if(blocks.size()!=m_circonference || blocks[0].size()!=m_height)
+    {
+        cout << "Blocs reçus par paquet invalides!";
+        return;
+    }
+
+    m_blocks = blocks;
 }
 
 void SPlanet::setBlock(sf::Vector2i position, int const& blockid)
@@ -72,4 +88,47 @@ int SPlanet::getCirconference()
 int SPlanet::getRadius()
 {
     return m_mainRadius;
+}
+
+sf::Packet& operator <<(sf::Packet& packet, SPlanet& planet)
+{
+    sf::Uint32 mainRadius = planet.getRadius();
+    packet << mainRadius;
+    packet << planet.m_position.x << planet.m_position.y;
+    for(int i = 0; i < planet.getCirconference(); i++)
+    {
+        for(int j = 0; j < planet.m_height; j++)
+        {
+            sf::Uint32 blockID = planet.m_blocks[i][j];
+            packet << blockID;
+        }
+    }
+}
+
+sf::Packet& operator >>(sf::Packet& packet, SPlanet& planet)
+{
+    sf::Uint32 mainRadius;
+    packet >> mainRadius;
+    planet.m_mainRadius = mainRadius;
+    sf::Vector2f position;
+    packet >> position.x >> position.y;
+    planet.m_position = position;
+    planet.m_circonference = 2*PI*planet.m_mainRadius;
+    planet.m_centerRadius = (planet.m_mainRadius/3)*2;
+    planet.m_height = (planet.m_mainRadius-planet.m_centerRadius)*2;
+
+    std::vector < std::vector <int> > blocks;
+    for(int i = 0; i < planet.m_circonference; i++)
+    {
+        std::vector <int> column;
+        for(int j = 0; j < planet.m_height; j++)
+        {
+            sf::Uint32 blockID;
+            packet >> blockID;
+            column.push_back(blockID);
+        }
+        blocks.push_back(column);
+    }
+    planet.loadBlocksFromVector(blocks);
+    return packet;
 }

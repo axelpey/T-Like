@@ -4,8 +4,10 @@
 #define PI 3.14159265
 
 #include <SFML/System.hpp>
+#include <SFML/Network.hpp>
 #include <vector>
 #include <cmath>
+#include <iostream>
 
 class SPlanet
 {
@@ -23,6 +25,7 @@ class SPlanet
     protected:
         //Méthodes protected
         void generatePlanet();
+        void loadBlocksFromVector(std::vector < std::vector <int> > blocks);
 
         //Attributs
         int m_circonference;
@@ -33,7 +36,8 @@ class SPlanet
         sf::Vector2f m_position;
         std::vector < std::vector <int> > m_blocks;
 
-    private:
+        friend sf::Packet& operator <<(sf::Packet& packet, SPlanet& planet);
+        friend sf::Packet& operator >>(sf::Packet& packet, SPlanet& planet);
 };
 
 #endif // SPLANET_H

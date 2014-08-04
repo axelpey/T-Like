@@ -16,6 +16,10 @@ Server::~Server()
 
 void Server::launch()
 {
+    cout << "Chargement de la planète..." << endl;
+
+    m_planet = SPlanet(18,sf::Vector2f(0,0));
+
     cout << "Démarrage du serveur sur le port " << m_port << endl;
 
     m_mainThread.launch();
@@ -50,6 +54,12 @@ void Server::main()
                     SPlayer* newPlayer = new SPlayer();
 
                     players.push_back(newPlayer);
+
+                    ///Envoyer informations sur la planète
+                    sf::Packet planetPacket;
+                    planetPacket << sf::Uint32(2); // ID Packet
+                    planetPacket << m_planet;
+                    client->send(planetPacket);
                 }
                 else
                 {

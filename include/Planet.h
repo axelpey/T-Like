@@ -9,7 +9,7 @@ class Planet : public SPlanet
 {
     public:
         Planet();
-        Planet(int r_mainRadius, sf::Vector2f r_position);
+        Planet(int mainRadius, sf::Vector2f position);
         virtual ~Planet();
 
         void render(sf::RenderWindow*);

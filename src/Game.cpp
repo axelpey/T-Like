@@ -298,6 +298,15 @@ void Game::networkLoop()
                     m_players.push_back(player);
                 }
                 break;
+
+            case 2:
+                packet >> m_planet;
+                break;
+
+            default:
+                cout << "Packet reçu non identifiable. Votre version du jeu n'est pas à jour avec celle du serveur." << endl;
+                cout << "ID du paquet : " << id << endl;
+                break;
             }
         }
         else
