@@ -129,6 +129,7 @@ sf::Packet& operator >>(sf::Packet& packet, SPlanet& planet)
         }
         blocks.push_back(column);
     }
+    cout << "Avant loadFromVector" << endl;
     planet.loadBlocksFromVector(blocks);
     return packet;
 }

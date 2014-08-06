@@ -167,6 +167,7 @@ bool Server::receiveTCP(sf::Packet& packet, int const& clientid)
         break;
 
     case 1:
+        {
         sf::TcpSocket& client = *clients[clientid];
 
         SPlayer& player = *players[clientid];
@@ -190,6 +191,35 @@ bool Server::receiveTCP(sf::Packet& packet, int const& clientid)
 
         //On envoie le packet
         client.send(packet);
+        }
+        break;
+
+    case 3:
+        {
+        sf::Vector2i position;
+        packet >> position.x >> position.y;
+        sf::Uint32 blockID;
+        packet >> blockID;
+        m_planet.setBlock(position,blockID);
+
+        //On renvoie aux clients la position du bloc qui a été modifié.
+        sf::Packet modifPacket;
+        modifPacket << sf::Uint32(3);
+        modifPacket << position.x << position.y << blockID;
+        for(int j = 0; j < clients.size(); j++)
+        {
+            if(j!=clientid) // On envoie les infos des autres joueurs sauf celle du joueur qui va les recevoir.
+            {
+                sf::TcpSocket& client = *clients[j];
+                //cout << "Envoi paquet 3 au client " << clientid << " du port " << client.getRemotePort() << endl;
+                client.send(modifPacket);
+            }
+        }
+        }
+        break;
+
+    default:
+        cout << "Paquet reçu du client " << clientid << " non identifiable.";
         break;
     }
 }

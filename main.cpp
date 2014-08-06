@@ -21,7 +21,7 @@
  - 2 : Stone
 **/
 
-#define SERVER 1
+#define SERVER 0
 
 
 /**

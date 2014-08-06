@@ -34,10 +34,16 @@ class Server
 
          Plans : Différentes méthodes pour recevoir différents packets. Doivent être les mêmes côté client;
 
-         Ids des packets server->client:
+         Ids des packets server->clients:
           - TCP 0 : Quand reçu, déconnecte le client qui l'a envoyé avec un message contenant la raison de la déconnexion.
           - TCP 1 : Packet contenant les informations sur les joueurs tels que leur nombre, leur nom, leur couleur, leur position.
           - TCP 2 : Packet contenant tous les blocs de la planète de base.
+          - TCP 3 : Packet informant qu'un bloc a été modifié et que les clients doivent prendre cela en compte. Suit la réception d'un TCP 3.
+
+         Ids des packets client->server:
+          - TCP 0 : Informe de la déconnexion du client.
+          - TCP 1 : Packet donnant les informations sur le joueur. Envoyé constamment au serveur, il indique également que le client est toujours connecté.
+          - TCP 3 : Packet informant que le client a modifié un bloc et que le serveur doit prendre cela en compte. Est suivi de l'envoi d'un TCP 3.
 
          Les méthodes receive sont associées aux différents id de paquets, et renvoient true quand tout s'est bien passé.
         */

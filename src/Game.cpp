@@ -148,11 +148,6 @@ bool Game::gameLoop()
             case sf::Event::MouseButtonPressed:
                 if(event.mouseButton.button == sf::Mouse::Right)
                 {
-                    /*
-                     Pour plus tard
-                     Récupérer position dans le monde puis la planète concernée.
-                    */
-
                     //On détermine l'emplacement du clic par rapport au centre de la planète
                     sf::Vector2f realPosition = m_window.mapPixelToCoords(sf::Vector2i(event.mouseButton.x,event.mouseButton.y));
 
@@ -167,10 +162,14 @@ bool Game::gameLoop()
                     else
                         angle = 270 + atan(oppose/adjacent)/PI*180;
 
-                    int xint = (int)height;
-                    int yint = (angle/360) * m_planet.getCirconference();
+                    int x = (angle/360) * m_planet.getCirconference();
+                    int y = (int)height;
 
-                    m_planet.setBlock(sf::Vector2i(yint,xint),0);
+                    m_planet.setBlock(sf::Vector2i(x,y),0);
+                    sf::Packet modifPacket;
+                    modifPacket << sf::Uint32(3); //Id Packet
+                    modifPacket << sf::Uint32(x) << sf::Uint32(y) << sf::Uint32(0);
+                    m_tcpSocket.send(modifPacket);
                 }
                 if(event.mouseButton.button == sf::Mouse::Left)
                 {
@@ -188,10 +187,14 @@ bool Game::gameLoop()
                     else
                         angle = 270 + atan(oppose/adjacent)/PI*180;
 
-                    int xint = (int)height;
-                    int yint = (angle/360) * m_planet.getCirconference();
+                    int x = (angle/360) * m_planet.getCirconference();
+                    int y = (int)height;
 
-                    m_planet.setBlock(sf::Vector2i(yint,xint),2);
+                    m_planet.setBlock(sf::Vector2i(x,y),2);
+                    sf::Packet modifPacket;
+                    modifPacket << sf::Uint32(3); //Id Packet
+                    modifPacket << sf::Uint32(x) << sf::Uint32(y) << sf::Uint32(2);
+                    m_tcpSocket.send(modifPacket);
                 }
                 break;
 
@@ -288,19 +291,35 @@ void Game::networkLoop()
                 break;
 
             case 1:
+            {
                 sf::Uint32 nbPlayers;
                 packet >> nbPlayers;
-                m_players.clear();
-                for(int i = 0; i < nbPlayers; i++)
+                if(nbPlayers != m_players.size())
                 {
-                    Player player("n/a",0, &m_planet);
-                    packet >> player;
-                    m_players.push_back(player);
+                    m_players.clear();
+                    for(int i = 0; i < nbPlayers; i++)
+                    {
+                        Player player("n/a",0, &m_planet);
+                        packet >> player;
+                        m_players.push_back(player);
+                    }
                 }
+            }
                 break;
 
             case 2:
                 packet >> m_planet;
+                break;
+
+            case 3:
+            {
+                sf::Vector2i position;
+                packet >> position.x >> position.y;
+                sf::Uint32 blockID;
+                packet >> blockID;
+                cout << "Paquet 3 : " << position.x << "," << position.y << " devient " << blockID << endl;
+                m_planet.setBlock(position,blockID);
+            }
                 break;
 
             default:
