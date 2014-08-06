@@ -34,7 +34,6 @@
   - Ecran de chargement au début dû au fait qu'il faut charger depuis le serveur les infos sur la planète.
   - Le déplacement du personnage doit être indépendant de sa position relative à planète.
   - Sauvegarde et chargement de la planète.
-  - Mettre une musique de fond.
 */
 
 using namespace std;

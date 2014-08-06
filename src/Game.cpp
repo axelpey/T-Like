@@ -314,6 +314,13 @@ void Game::networkLoop()
                         m_players.push_back(player);
                     }
                 }
+                else
+                {
+                    for(int i = 0; i < nbPlayers; i++)
+                    {
+                        packet >> m_players[i];
+                    }
+                }
             }
                 break;
 
