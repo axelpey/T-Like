@@ -31,10 +31,10 @@
   - Créer un simple chat en bas à gauche / Canal de packet : un nouveau TCP.
   - Gestion des collisions.
   - Capacité de sauter.
-  - Informations sur la planète gardée par le serveur. Le serveur renvoie un paquet dès que la planète est modifiée indiquant quel bloc a été modifié.
   - Ecran de chargement au début dû au fait qu'il faut charger depuis le serveur les infos sur la planète.
   - Le déplacement du personnage doit être indépendant de sa position relative à planète.
   - Sauvegarde et chargement de la planète.
+  - Mettre une musique de fond.
 */
 
 using namespace std;

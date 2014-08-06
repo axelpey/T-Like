@@ -89,6 +89,16 @@ bool Game::gameLoop()
     int fps;
     sf::Clock clock;
 
+    sf::Music music;
+    if(music.openFromFile("data/music.ogg"))
+    {
+        music.play();
+    }
+    else
+    {
+        cout << "Musique non trouvée. Pas de lecture de musique." << endl;
+    }
+
     while (m_running)
     {
         sf::Event event;

@@ -1,6 +1,7 @@
 #ifndef GAME_H
 #define GAME_H
 
+#include <SFML/Audio.hpp>
 #include <SFML/Network.hpp>
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
