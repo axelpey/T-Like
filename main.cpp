@@ -30,6 +30,7 @@
   - Changer le zoom sur la fenêtre grâce à la molette de la souris.
   - Créer un simple chat en bas à gauche / Canal de packet : un nouveau TCP.
   - Gestion des collisions.
+  - Gravité qui attire le personnage : Nécessite de donner une masse au perso ainsi qu'à la planète.
   - Capacité de sauter.
   - Ecran de chargement au début dû au fait qu'il faut charger depuis le serveur les infos sur la planète.
   - Le déplacement du personnage doit être indépendant de sa position relative à planète.
