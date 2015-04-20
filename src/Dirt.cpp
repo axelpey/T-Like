@@ -1,4 +1,4 @@
-#include "../include/Dirt.h"
+#include "Dirt.h"
 
 Dirt::Dirt()
 {

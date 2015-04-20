@@ -2,11 +2,11 @@
 #include <thread>
 #include <string>
 
-#include "include/Game.h"
-#include "include/Block.h"
-#include "include/Planet.h"
-#include "include/Player.h"
-#include "include/Server/Server.h"
+#include "Game.h"
+#include "Block.h"
+#include "Planet.h"
+#include "Player.h"
+#include "Server.h"
 
 /**
  0 - Client only
