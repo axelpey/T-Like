@@ -1,4 +1,4 @@
-#include "../../include/Server/SPlayer.h"
+#include "SPlayer.h"
 
 using namespace std;
 

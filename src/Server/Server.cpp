@@ -1,4 +1,4 @@
-#include "../../include/Server/Server.h"
+#include "Server.h"
 
 using namespace std;
 
@@ -262,11 +262,11 @@ void Server::disconnect(int const& clientid)
     sf::TcpSocket* socket = clients[clientid];
     socket->disconnect();
     delete socket;
-    auto it = clients.begin() + clientid - 1; //Iterateur sur le client dont l'id est clientid.
+    vector<sf::TcpSocket*>::iterator it = clients.begin() + clientid - 1; //Iterateur sur le client dont l'id est clientid.
     clients.erase(it);
 
     SPlayer* player = players[clientid];
     delete player;
-    auto it2 = players.begin() + clientid - 1;
+    vector<SPlayer*>::iterator it2 = players.begin() + clientid - 1;
     players.erase(it2);
 }

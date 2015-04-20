@@ -1,4 +1,4 @@
-#include "../include/Planet.h"
+#include "Planet.h"
 
 using namespace std;
 

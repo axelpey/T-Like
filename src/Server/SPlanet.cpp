@@ -1,4 +1,4 @@
-#include "../../include/Server/SPlanet.h"
+#include "SPlanet.h"
 
 using namespace std;
 
