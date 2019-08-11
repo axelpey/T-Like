@@ -7,10 +7,11 @@ Player::Player()
 
 }
 
-Player::Player(string name, int r_weight, Planet* r_planet)
+Player::Player(string name, int r_mass, Planet* r_planet)
 {
     m_speed = 0.5;
     m_name = name;
+    onGround = true;
     rectangle = sf::RectangleShape(sf::Vector2f(1,2));
     char r = rand()%255;
     char g = rand()%255;
@@ -18,7 +19,7 @@ Player::Player(string name, int r_weight, Planet* r_planet)
     m_color = sf::Color(r,g,b);
     rectangle.setFillColor(m_color);
 
-    weight = r_weight;
+    m_mass = r_mass;
     planet = r_planet;
     relativePos = sf::Vector2f(0,planet->getRadius()/3+1); ///Debug
 }
@@ -28,14 +29,24 @@ Player::~Player()
     //dtor
 }
 
-sf::Vector2f Player::relativePos2absolute(sf::Vector2f relativePosition)
+sf::Vector2f Player::relativeCoord2absolute(sf::Vector2f relCoord)
 {
-    //Trigo à faire
-    sf::Vector2f absolutePosition;
-    absolutePosition.y = (planet->getCenterPoint().y)-sinf((relativePosition.x*PI/180)+PI/2)*(planet->getCenterShape().getRadius()+relativePosition.y+rectangle.getSize().y);
-    absolutePosition.x = (planet->getCenterPoint().x)+cosf((relativePosition.x*PI/180)-PI/2)*(planet->getCenterShape().getRadius()+relativePosition.y+rectangle.getSize().y);
+    //Trigo ï¿½ faire
+    sf::Vector2f absCoord;
+    absCoord.y = (planet->getCenterPoint().y)-sinf((relCoord.x*PI/180)+PI/2)*(planet->getCenterShape().getRadius()+relCoord.y+rectangle.getSize().y);
+    absCoord.x = (planet->getCenterPoint().x)+cosf((relCoord.x*PI/180)-PI/2)*(planet->getCenterShape().getRadius()+relCoord.y+rectangle.getSize().y);
 
-    return absolutePosition;
+    return absCoord;
+}
+
+sf::Vector2f Player::absoluteCoord2relative(sf::Vector2f absCoord)
+{
+    //Trigo ï¿½ faire
+    sf::Vector2f relCoord;
+    relCoord.x = (PI/2 + acosf(absCoord.x - (planet->getCenterPoint().x))/(planet->getCenterShape().getRadius()+relCoord.y+rectangle.getSize().y))*180/PI;
+    relCoord.y = (-PI/2 + asinf(-absCoord.x + (planet->getCenterPoint().x))/(planet->getCenterShape().getRadius()+relCoord.y+rectangle.getSize().y))*180/PI;
+    
+    return absCoord;
 }
 
 void Player::render(sf::RenderWindow* window)
@@ -63,9 +74,9 @@ void Player::render(sf::RenderWindow* window)
     sf::Vector2f namePosition;
     namePosition.x = relativePos.x;
     namePosition.y = relativePos.y + 2;
-    namePosition = relativePos2absolute(namePosition);
+    namePosition = relativeCoord2absolute(namePosition);
 
-    absolutePos = relativePos2absolute(relativePos);
+    absolutePos = relativeCoord2absolute(relativePos);
     rectangle.setPosition(absolutePos.x,absolutePos.y);
     rectangle.setRotation(relativePos.x);
     nameText.setPosition(namePosition.x,namePosition.y);
@@ -76,16 +87,56 @@ void Player::render(sf::RenderWindow* window)
     //std::cout << "Player pos absolute x = " << absolutePos.x << " and absolute y = " << absolutePos.y << std::endl;
 }
 
-void Player::goLeft()
+void Player::handleDirection(bool right, bool left, bool jump)
 {
-    //relativePos.x-=m_speed;
-    relativePos.x--;
+    if (right && onGround)
+    {
+        relativeSpeed.x = (m_speed/relativePos.y)*(PI/180);
+    }
+    else if (left && onGround)
+    {
+        relativeSpeed.x = -(m_speed/relativePos.y)*(PI/180);
+    }
+    else if (onGround)
+    {
+        relativeSpeed.x = 0;
+    }
+
+    if (jump && onGround)
+    {
+        onGround = false;
+        relativeSpeed.y = +1;
+    }
 }
 
-void Player::goRight()
+void Player::playPhysics()
 {
-    //relativePos.x+=m_speed;
-    relativePos.x++;
+    /*
+        If on the ground, we're working with relative speed.
+        Indeed, no need to run particularily complicated physics.
+    */
+
+    if(onGround)
+    {
+       relativePos.x += relativeSpeed.x;
+       absoluteSpeed = relativeCoord2absolute(relativeSpeed);
+    }
+    
+
+    /*
+        If in the air, we're working with real physics.
+        Thus we should be working with absolute speed.
+    */
+
+    else
+    {
+        relativeSpeed.y += G*(planet->getMass())*m_mass/(relativePos.y*relativePos.y);
+        absoluteSpeed = relativeCoord2absolute(relativeSpeed);
+        relativePos.y += relativeSpeed.y;
+        relativePos.x += relativeSpeed.x;
+        //absoluteSpeed += G*(planet->getMass())*m_mass/(relativePos.y*relativePos.y);
+        //relativeSpeed = absoluteCoord2relative(relativeSpeed);
+    }
 }
 
 void Player::setRelativePos(sf::Vector2f const& pos)

@@ -35,7 +35,9 @@ Game::Game() : m_window(sf::VideoMode(1280, 720), "Initialisation..."),
     ifs.close();
 
     m_planet = Planet(18, sf::Vector2f(0,0));
-    m_player = Player(name, 1, &m_planet);
+    m_player = Player(name, 60, &m_planet);
+
+    m_players.push_back(m_player);
 
     m_window.setView(m_view);
     m_window.setFramerateLimit(60);
@@ -48,7 +50,7 @@ Game::~Game()
     //dtor
 }
 
-bool Game::start() ///Démarrage du jeu
+bool Game::start() ///Dï¿½marrage du jeu
 {
     m_running = true;
 
@@ -57,7 +59,7 @@ bool Game::start() ///Démarrage du jeu
     if(!connect())
         return false;
 
-    m_networkThread.launch(); ///Dans un thread, ce qui permet de modifier les variables pendant l'exécution du jeu.
+    m_networkThread.launch(); ///Dans un thread, ce qui permet de modifier les variables pendant l'exï¿½cution du jeu.
 
     gameLoop();
 
@@ -86,6 +88,8 @@ bool Game::gameLoop()
 {
     bool rightPressed = false;
     bool leftPressed = false;
+    bool spacePressed = false;
+    bool newSpacePressed = false;
     int fps;
     sf::Clock clock;
 
@@ -96,7 +100,7 @@ bool Game::gameLoop()
     }
     else
     {
-        cout << "Musique non trouvée. Pas de lecture de musique." << endl;
+        cout << "Musique non trouvï¿½e. Pas de lecture de musique." << endl;
     }
 
     while (m_running)
@@ -135,6 +139,13 @@ bool Game::gameLoop()
                 case sf::Keyboard::Left:
                     leftPressed = true;
                     break;
+                
+                case sf::Keyboard::Space:
+                    if(!spacePressed) {
+                        newSpacePressed = true;
+                    }
+                    spacePressed = true;
+                    break;
                 }
                 break;
 
@@ -150,6 +161,10 @@ bool Game::gameLoop()
                 case sf::Keyboard::Left:
                     leftPressed = false;
                     break;
+                
+                case sf::Keyboard::Space:
+                    spacePressed = false;
+                    break;
                 }
                 break;
 
@@ -158,10 +173,10 @@ bool Game::gameLoop()
             case sf::Event::MouseButtonPressed:
                 if(event.mouseButton.button == sf::Mouse::Right)
                 {
-                    //On détermine l'emplacement du clic par rapport au centre de la planète
+                    //On dï¿½termine l'emplacement du clic par rapport au centre de la planï¿½te
                     sf::Vector2f realPosition = m_window.mapPixelToCoords(sf::Vector2i(event.mouseButton.x,event.mouseButton.y));
 
-                    //Distance entre la position de clic de la souris et le centre de la planète
+                    //Distance entre la position de clic de la souris et le centre de la planï¿½te
                     float adjacent = realPosition.x;
                     float oppose = realPosition.y;
                     float distance = sqrt(pow(realPosition.x,2) + pow(realPosition.y,2));
@@ -183,10 +198,10 @@ bool Game::gameLoop()
                 }
                 if(event.mouseButton.button == sf::Mouse::Left)
                 {
-                    //On détermine l'emplacement du clic par rapport au centre de la planète
+                    //On dï¿½termine l'emplacement du clic par rapport au centre de la planï¿½te
                     sf::Vector2f realPosition = m_window.mapPixelToCoords(sf::Vector2i(event.mouseButton.x,event.mouseButton.y));
 
-                    //Distance entre la position de clic de la souris et le centre de la planète
+                    //Distance entre la position de clic de la souris et le centre de la planï¿½te
                     float adjacent = realPosition.x;
                     float oppose = realPosition.y;
                     float distance = sqrt(pow(realPosition.x,2) + pow(realPosition.y,2));
@@ -210,7 +225,7 @@ bool Game::gameLoop()
 
 ///--------------------------------------Restes----------------------------------------------------------------------------------------------------------///
             case sf::Event::Resized:
-                // on met à jour la vue, avec la nouvelle taille de la fenêtre
+                // on met ï¿½ jour la vue, avec la nouvelle taille de la fenï¿½tre
 
                 break;
             }
@@ -218,14 +233,13 @@ bool Game::gameLoop()
 
 ///--------------------------------------Keyboard--------------------------------------------------------------------------------------------------------///
 
-        if(rightPressed)
-        {
-            m_player.goRight();
-        }
+        m_player.handleDirection(rightPressed,leftPressed,newSpacePressed);
 
-        if(leftPressed)
+///-------------------------------------Physics----------------------------------------------------------------------------------------------------------///
+
+        for(int i = 0; i < m_players.size(); i ++)
         {
-            m_player.goLeft();
+            m_players[i].playPhysics();
         }
 
 ///--------------------------------------Render----------------------------------------------------------------------------------------------------------///
@@ -265,6 +279,7 @@ bool Game::gameLoop()
 
         //End display
         m_window.display();
+        newSpacePressed = false;
     }
 
     m_window.close();
@@ -284,7 +299,7 @@ void Game::networkLoop()
             cout << "Erreur lors de l'envoi du paquet" << endl;
         }
 
-        ///Réception des infos du serveur
+        ///Rï¿½ception des infos du serveur
         sf::Packet packet;
         if(m_tcpSocket.receive(packet) == sf::Socket::Done)
         {
@@ -296,7 +311,7 @@ void Game::networkLoop()
             case 0:
                 packet >> reason;
                 //Serveur shutdown
-                cout << "Vous avez été déconnecté du serveur. Raison : " << reason << endl;
+                cout << "Vous avez ï¿½tï¿½ dï¿½connectï¿½ du serveur. Raison : " << reason << endl;
                 exit();
                 break;
 
@@ -340,7 +355,7 @@ void Game::networkLoop()
                 break;
 
             default:
-                cout << "Packet reçu non identifiable. Votre version du jeu n'est pas à jour avec celle du serveur." << endl;
+                cout << "Packet reï¿½u non identifiable. Votre version du jeu n'est pas ï¿½ jour avec celle du serveur." << endl;
                 cout << "ID du paquet : " << id << endl;
                 break;
             }
@@ -348,13 +363,13 @@ void Game::networkLoop()
         else
         {}
     }
-    //On envoie au serveur qu'on se déconnecte
+    //On envoie au serveur qu'on se dï¿½connecte
 
     sf::Packet discoPacket;
     discoPacket << sf::Uint32(0);
     if(m_tcpSocket.send(discoPacket) != sf::Socket::Done)
     {
-        cout << "Erreur lors de l'envoi du paquet de déconnexion" << endl;
+        cout << "Erreur lors de l'envoi du paquet de dï¿½connexion" << endl;
     }
 
     m_tcpSocket.disconnect();

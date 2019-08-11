@@ -12,6 +12,7 @@ Planet::Planet(int mainRadius, sf::Vector2f position) : SPlanet(mainRadius, posi
     centerShape = sf::CircleShape(m_centerRadius);
     centerShape.setOrigin(m_centerRadius,m_centerRadius);
     centerShape.setPosition(m_position);
+    m_mass = mainRadius*3.14*mainRadius;
 }
 
 void Planet::render(sf::RenderWindow* window)
@@ -59,7 +60,7 @@ void Planet::render(sf::RenderWindow* window)
         {
             if(m_blocks[i][j] == 0)
                 continue;
-            //4 Choses à régler :
+            //4 Choses ï¿½ rï¿½gler :
             sf::ConvexShape block;
 
             block.setPointCount(4);
@@ -112,6 +113,11 @@ void Planet::render(sf::RenderWindow* window)
 sf::CircleShape Planet::getCenterShape()
 {
     return centerShape;
+}
+
+float Planet::getMass()
+{
+    return m_mass;
 }
 
 Planet::~Planet()

@@ -9,6 +9,7 @@
 
 #include <fstream>
 #include <sstream>
+#include <vector>
 
 #include "Player.h"
 
@@ -21,7 +22,7 @@ class Game
         bool start();
         bool connect();
         bool gameLoop(); ///Affichage du jeu, interaction avec le joueur
-        void networkLoop(); ///Mise à jour des variables avec le serveur
+        void networkLoop(); ///Mise ï¿½ jour des variables avec le serveur
 
         void exit();
     protected:

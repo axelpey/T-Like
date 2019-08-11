@@ -9,18 +9,19 @@
 #include "Planet.h"
 
 #define PI 3.14159265
+#define G 0.000001
 
 class Player
 {
     public:
         Player();
-        Player(std::string name, int r_weight, Planet* r_planet);
+        Player(std::string name, int r_mass, Planet* r_planet);
         virtual ~Player();
 
         void render(sf::RenderWindow*);
 
-        void goLeft();
-        void goRight();
+        void handleDirection(bool right,bool left,bool jump);
+        void playPhysics();
 
         void setRelativePos(sf::Vector2f const& pos);
         void setColor(sf::Color const& color);
@@ -32,13 +33,17 @@ class Player
         sf::Color getColor();
         std::string getName();
     protected:
-        sf::Vector2f relativePos2absolute(sf::Vector2f relativePosition);
+        sf::Vector2f relativeCoord2absolute(sf::Vector2f relCoord);
+        sf::Vector2f absoluteCoord2relative(sf::Vector2f absCoord);
     private:
         std::string m_name;
-        Planet* planet;
+        Planet* planet; 
+        bool onGround;
         sf::Vector2f absolutePos;
-        sf::Vector2f relativePos; //x = position autour de la planète (en degrés) y = hauteur
-        int weight;
+        sf::Vector2f relativePos; //x = position autour de la planete (en degres) y = hauteur
+        sf::Vector2f absoluteSpeed;
+        sf::Vector2f relativeSpeed;
+        float m_mass;
         float m_speed;
         sf::Color m_color;
         sf::RectangleShape rectangle; //Le perso est juste un rectangle

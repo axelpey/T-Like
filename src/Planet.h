@@ -15,10 +15,12 @@ class Planet : public SPlanet
         void render(sf::RenderWindow*);
 
         sf::CircleShape getCenterShape();
+        float getMass();
     protected:
 
     private:
         sf::CircleShape centerShape;
+        float m_mass;
 };
 
 #endif // PLANET_H

@@ -6,7 +6,7 @@
 #include "Block.h"
 #include "Planet.h"
 #include "Player.h"
-#include "Server.h"
+#include "Server/Server.h"
 
 /**
  0 - Client only
@@ -26,15 +26,15 @@
 
 /**
  TODO :
-  - Récupération de l'adresse du serveur sur mon serveur perso ovh.
-  - Changer le zoom sur la fenêtre grâce à la molette de la souris.
-  - Créer un simple chat en bas à gauche / Canal de packet : un nouveau TCP.
+  - Rï¿½cupï¿½ration de l'adresse du serveur sur mon serveur perso ovh.
+  - Changer le zoom sur la fenï¿½tre grï¿½ce ï¿½ la molette de la souris.
+  - Crï¿½er un simple chat en bas ï¿½ gauche / Canal de packet : un nouveau TCP.
   - Gestion des collisions.
-  - Gravité qui attire le personnage : Nécessite de donner une masse au perso ainsi qu'à la planète.
-  - Capacité de sauter.
-  - Ecran de chargement au début dû au fait qu'il faut charger depuis le serveur les infos sur la planète.
-  - Le déplacement du personnage doit être indépendant de sa position relative à planète.
-  - Sauvegarde et chargement de la planète.
+  - Gravitï¿½ qui attire le personnage : Nï¿½cessite de donner une masse au perso ainsi qu'ï¿½ la planï¿½te.
+  - Capacitï¿½ de sauter.
+  - Ecran de chargement au dï¿½but dï¿½ au fait qu'il faut charger depuis le serveur les infos sur la planï¿½te.
+  - Le dï¿½placement du personnage doit ï¿½tre indï¿½pendant de sa position relative ï¿½ planï¿½te.
+  - Sauvegarde et chargement de la planï¿½te.
 */
 
 using namespace std;
@@ -49,7 +49,7 @@ int main()
 
     if(SERVER==2)
     {
-        cout << "Seul le serveur a été allumé" << endl;
+        cout << "Seul le serveur a ï¿½tï¿½ allumï¿½" << endl;
         serverThread.launch();
         serverThread.wait();
         return 0;
