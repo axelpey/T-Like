@@ -90,7 +90,8 @@ bool Game::gameLoop()
     bool leftPressed = false;
     bool spacePressed = false;
     bool newSpacePressed = false;
-    int fps;
+    int fps = 0;
+	int averagefps = 12;
     sf::Clock clock;
 
     sf::Music music;
@@ -105,6 +106,7 @@ bool Game::gameLoop()
 
     while (m_running)
     {
+
         sf::Event event;
         while (m_window.pollEvent(event))
         {
@@ -237,9 +239,10 @@ bool Game::gameLoop()
 
 ///-------------------------------------Physics----------------------------------------------------------------------------------------------------------///
 
+        m_player.playPhysics(averagefps);
         for(int i = 0; i < m_players.size(); i ++)
         {
-            m_players[i].playPhysics();
+            m_players[i].playPhysics(fps);
         }
 
 ///--------------------------------------Render----------------------------------------------------------------------------------------------------------///
@@ -273,7 +276,8 @@ bool Game::gameLoop()
             ss << fps;
             string str_fps = ss.str();
             m_window.setTitle("Connected to " + m_tcpSocket.getRemoteAddress().toString() + ". FPS = " + str_fps);
-            fps = 0;
+			averagefps = fps;
+			fps = 0;
             clock.restart();
         }
 
@@ -283,6 +287,8 @@ bool Game::gameLoop()
     }
 
     m_window.close();
+
+	return true;
 }
 
 void Game::networkLoop()

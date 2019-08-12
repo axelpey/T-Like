@@ -9,7 +9,6 @@
 #include "Planet.h"
 
 #define PI 3.14159265
-#define G 0.000001
 
 class Player
 {
@@ -21,7 +20,7 @@ class Player
         void render(sf::RenderWindow*);
 
         void handleDirection(bool right,bool left,bool jump);
-        void playPhysics();
+        void playPhysics(int fps);
 
         void setRelativePos(sf::Vector2f const& pos);
         void setColor(sf::Color const& color);
@@ -33,8 +32,10 @@ class Player
         sf::Color getColor();
         std::string getName();
     protected:
-        sf::Vector2f relativeCoord2absolute(sf::Vector2f relCoord);
-        sf::Vector2f absoluteCoord2relative(sf::Vector2f absCoord);
+        sf::Vector2f relativePos2absolute(sf::Vector2f relCoord);
+		sf::Vector2f relativeSpeed2absolute(sf::Vector2f relCoord);
+        sf::Vector2f absolutePos2relative(sf::Vector2f absCoord);
+		sf::Vector2f absoluteSpeed2relative(sf::Vector2f absCoord);
     private:
         std::string m_name;
         Planet* planet; 
