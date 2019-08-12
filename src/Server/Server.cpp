@@ -57,7 +57,7 @@ void Server::main()
 
                     ///Envoyer informations sur la planète
                     sf::Packet planetPacket;
-                    planetPacket << sf::Uint32(2); // ID Packet
+                    planetPacket << sf::Uint8(2); // ID Packet
                     planetPacket << m_planet;
                     client->send(planetPacket);
                 }
@@ -157,12 +157,12 @@ bool Server::receiveUDP(sf::Packet& packet, int const& clientid)
 
 bool Server::receiveTCP(sf::Packet& packet, int const& clientid)
 {
-    sf::Uint32 id;
+    sf::Uint8 id;
     packet >> id;
 
     switch(id)
     {
-    case 0: //Packet qui... ?
+    case 0: //Packet for a client disconnecting
         disconnect(clientid);
         break;
 
@@ -176,7 +176,7 @@ bool Server::receiveTCP(sf::Packet& packet, int const& clientid)
 
         //On prépare le packet à envoyer au client
         sf::Packet packet;
-        packet << sf::Uint32(1); //ID Packet
+        packet << sf::Uint8(1); //ID Packet
         sf::Uint32 nbPlayers;
         nbPlayers = players.size()-1;
         packet << nbPlayers; //
@@ -198,13 +198,13 @@ bool Server::receiveTCP(sf::Packet& packet, int const& clientid)
         {
         sf::Vector2i position;
         packet >> position.x >> position.y;
-        sf::Uint32 blockID;
+        sf::Uint16 blockID;
         packet >> blockID;
         m_planet.setBlock(position,blockID);
 
         //On renvoie aux clients la position du bloc qui a été modifié.
         sf::Packet modifPacket;
-        modifPacket << sf::Uint32(3);
+        modifPacket << sf::Uint8(3);
         modifPacket << position.x << position.y << blockID;
         for(int j = 0; j < clients.size(); j++)
         {
@@ -234,7 +234,7 @@ void Server::stop()
     {
         sf::TcpSocket& socket = *clients[0];
         sf::Packet srvSHUTDOWNPacket;
-        srvSHUTDOWNPacket << sf::Uint32(0); //ID packet qui demande la déconnexion du client.
+        srvSHUTDOWNPacket << sf::Uint8(0); //ID packet qui demande la déconnexion du client.
         srvSHUTDOWNPacket << string("Extinction du serveur.");
         socket.send(srvSHUTDOWNPacket);
     }
@@ -251,7 +251,7 @@ void Server::kick(int const& clientid)
 {
     sf::TcpSocket* socket = clients[clientid];
     sf::Packet kickPacket;
-    kickPacket << sf::Uint32(0);
+    kickPacket << sf::Uint8(0);
     kickPacket << string("Vous avez été expulsé du serveur!");
     socket->send(kickPacket);
 }

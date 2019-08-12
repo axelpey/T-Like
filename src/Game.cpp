@@ -194,8 +194,8 @@ bool Game::gameLoop()
 
                     m_planet.setBlock(sf::Vector2i(x,y),0);
                     sf::Packet modifPacket;
-                    modifPacket << sf::Uint32(3); //Id Packet
-                    modifPacket << sf::Uint32(x) << sf::Uint32(y) << sf::Uint32(0);
+                    modifPacket << sf::Uint8(3); //Id Packet
+                    modifPacket << sf::Uint32(x) << sf::Uint32(y) << sf::Uint16(0);
                     m_tcpSocket.send(modifPacket);
                 }
                 if(event.mouseButton.button == sf::Mouse::Left)
@@ -219,8 +219,8 @@ bool Game::gameLoop()
 
                     m_planet.setBlock(sf::Vector2i(x,y),2);
                     sf::Packet modifPacket;
-                    modifPacket << sf::Uint32(3); //Id Packet
-                    modifPacket << sf::Uint32(x) << sf::Uint32(y) << sf::Uint32(2);
+                    modifPacket << sf::Uint8(3); //Id Packet
+                    modifPacket << sf::Uint32(x) << sf::Uint32(y) << sf::Uint16(2);
                     m_tcpSocket.send(modifPacket);
                 }
                 break;
@@ -297,7 +297,7 @@ void Game::networkLoop()
     {
         ///Envoi de la position
         sf::Packet ownPacket;
-        ownPacket << sf::Uint32(1); //Id du paquet
+        ownPacket << sf::Uint8(1); //Id du paquet
         ownPacket << m_player;
 
         if(m_tcpSocket.send(ownPacket) != sf::Socket::Done)
@@ -309,7 +309,7 @@ void Game::networkLoop()
         sf::Packet packet;
         if(m_tcpSocket.receive(packet) == sf::Socket::Done)
         {
-            sf::Uint32 id;
+            sf::Uint8 id;
             packet >> id;
             string reason;
             switch(id)
@@ -323,7 +323,7 @@ void Game::networkLoop()
 
             case 1:
             {
-                sf::Uint32 nbPlayers;
+                sf::Uint8 nbPlayers;
                 packet >> nbPlayers;
                 if(nbPlayers != m_players.size())
                 {
@@ -353,7 +353,7 @@ void Game::networkLoop()
             {
                 sf::Vector2i position;
                 packet >> position.x >> position.y;
-                sf::Uint32 blockID;
+                sf::Uint16 blockID;
                 packet >> blockID;
                 cout << "Paquet 3 : " << position.x << "," << position.y << " devient " << blockID << endl;
                 m_planet.setBlock(position,blockID);
@@ -372,7 +372,7 @@ void Game::networkLoop()
     //On envoie au serveur qu'on se d�connecte
 
     sf::Packet discoPacket;
-    discoPacket << sf::Uint32(0);
+    discoPacket << sf::Uint8(0);
     if(m_tcpSocket.send(discoPacket) != sf::Socket::Done)
     {
         cout << "Erreur lors de l'envoi du paquet de d�connexion" << endl;
