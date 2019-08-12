@@ -41,87 +41,6 @@ sf::Vector2f Player::relativePos2absolute(sf::Vector2f relCoord)
     return absCoord;
 }
 
-//Useless
-sf::Vector2f Player::relativeSpeed2absolute(sf::Vector2f relCoord)
-{
-	//Trigo � faire
-	sf::Vector2f absCoord;
-	float norm = sqrt(pow(relCoord.x * (planet->getCenterShape().getRadius() + relCoord.y + rectangle.getSize().y), 2) + pow(relCoord.y, 2));
-	absCoord.y = - sinf((relCoord.x * PI / 180) + PI / 2) * norm;
-	absCoord.x = cosf((relCoord.x * PI / 180) - PI / 2) * norm;
-
-	return absCoord;
-}
-
-//Useless
-sf::Vector2f Player::absolutePos2relative(sf::Vector2f absCoord)
-{
-    //Trigo � faire
-    sf::Vector2f relCoord;
-    sf::Vector2f planetCenter = planet->getCenterShape().getPosition();
-    relCoord.y = sqrt(
-		pow(absCoord.x - planetCenter.x,2)
-		+ pow(absCoord.y - planetCenter.y,2))
-		- planet->getRadius() - rectangle.getSize().y;
-	relCoord.x = (180 / PI) * atanf((absCoord.x - planetCenter.x)
-		/ (absCoord.y - planetCenter.y));
-
-    return relCoord;
-}
-
-//Useless
-sf::Vector2f Player::absoluteSpeed2relative(sf::Vector2f absCoord)
-{
-	//Trigo � faire
-	sf::Vector2f relCoord;
-	sf::Vector2f planetCenter = planet->getCenterShape().getPosition();
-	float norm = sqrt(pow(absCoord.x, 2) + pow(absCoord.y, 2));
-	relCoord.y = -sqrt(pow(absCoord.x - planetCenter.x, 2)
-		+ pow(absCoord.y - planetCenter.y, 2));
-	relCoord.x = (180 / PI) * atanf((absCoord.y - planetCenter.y)
-		/ (absCoord.x - planetCenter.x));
-
-	return relCoord;
-}
-
-void Player::render(sf::RenderWindow* window)
-{
-    if(relativePos.x > 360)
-    {
-        relativePos.x = relativePos.x - 360;
-    }
-    sf::Text nameText;
-    float csize = 100;
-    nameText.setCharacterSize(csize);
-    nameText.setScale(1/csize,1/csize);
-    nameText.setString(m_name);
-    nameText.setColor(sf::Color::White);
-    sf::Font calibri;
-    if(!calibri.loadFromFile("data/calibri.ttf"))
-    {
-        cout << "Erreur lors du chargement de la police calibri" << endl;
-    }
-    else
-    {
-        nameText.setFont(calibri);
-    }
-
-    sf::Vector2f namePosition;
-    namePosition.x = relativePos.x;
-    namePosition.y = relativePos.y + 2;
-    namePosition = relativePos2absolute(namePosition);
-
-    absolutePos = relativePos2absolute(relativePos);
-    rectangle.setPosition(absolutePos.x,absolutePos.y);
-    rectangle.setRotation(relativePos.x);
-    nameText.setPosition(namePosition.x,namePosition.y);
-    nameText.setRotation(relativePos.x);
-    window->draw(rectangle);
-    window->draw(nameText);
-    //std::cout << "Player pos relative x = " << relativePos.x << " and relative y = " << relativePos.y << std::endl;
-    //std::cout << "Player pos absolute x = " << absolutePos.x << " and absolute y = " << absolutePos.y << std::endl;
-}
-
 void Player::handleDirection(bool right, bool left, bool jump)
 {
     if (onGround)
@@ -140,13 +59,18 @@ void Player::handleDirection(bool right, bool left, bool jump)
     if (jump && onGround)
     {
         onGround = false;
-        relativeSpeed.y = +1;
+        relativeSpeed.y = +1.5;
     }
 }
 
 void Player::playPhysics(int fps)
 {
     float dt = 1/((float) fps);
+
+	 // ---------- Compute new position
+
+	sf::Vector2f newPosition = relativePos;
+
     /*
         If on the ground, we're working with relative speed.
         Indeed, no need to run particularily complicated physics.
@@ -154,8 +78,7 @@ void Player::playPhysics(int fps)
 
     if(onGround)
     {
-       relativePos.x += dt*relativeSpeed.x;
-       absoluteSpeed = relativeSpeed2absolute(relativeSpeed);
+       newPosition.x += dt*relativeSpeed.x;
     }
     
 
@@ -170,8 +93,55 @@ void Player::playPhysics(int fps)
 			+ planet->getCenterShape().getRadius() + rectangle.getSize().y/2;
         float gnorm = G*(planet->getMass())*m_mass/(pow(distToCenter,2));
 		relativeSpeed.y -= dt*gnorm;
-		relativePos.y += dt*relativeSpeed.y;
+		newPosition.y += dt*relativeSpeed.y;
     }
+
+	// ----------------- Manage collisions
+
+	std::pair<sf::Vector2f, bool> res;
+
+	res = planet->collidingBlocks(relativePos, newPosition);
+
+	relativePos = res.first;
+	onGround = res.second;
+}
+
+void Player::render(sf::RenderWindow* window)
+{
+	if (relativePos.x > 360)
+	{
+		relativePos.x = relativePos.x - 360;
+	}
+	sf::Text nameText;
+	float csize = 100;
+	nameText.setCharacterSize(csize);
+	nameText.setScale(1 / csize, 1 / csize);
+	nameText.setString(m_name);
+	nameText.setColor(sf::Color::White);
+	sf::Font calibri;
+	if (!calibri.loadFromFile("data/calibri.ttf"))
+	{
+		cout << "Erreur lors du chargement de la police calibri" << endl;
+	}
+	else
+	{
+		nameText.setFont(calibri);
+	}
+
+	sf::Vector2f namePosition;
+	namePosition.x = relativePos.x;
+	namePosition.y = relativePos.y + 2;
+	namePosition = relativePos2absolute(namePosition);
+
+	absolutePos = relativePos2absolute(relativePos);
+	rectangle.setPosition(absolutePos.x, absolutePos.y);
+	rectangle.setRotation(relativePos.x);
+	nameText.setPosition(namePosition.x, namePosition.y);
+	nameText.setRotation(relativePos.x);
+	window->draw(rectangle);
+	window->draw(nameText);
+	//std::cout << "Player pos relative x = " << relativePos.x << " and relative y = " << relativePos.y << std::endl;
+	//std::cout << "Player pos absolute x = " << absolutePos.x << " and absolute y = " << absolutePos.y << std::endl;
 }
 
 void Player::setRelativePos(sf::Vector2f const& pos)

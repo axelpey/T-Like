@@ -13,8 +13,8 @@
 class Player
 {
     public:
-        Player();
-        Player(std::string name, int r_mass, Planet* r_planet);
+		Player();
+		Player(std::string name, int r_mass, Planet* r_planet);
         virtual ~Player();
 
         void render(sf::RenderWindow*);
@@ -33,9 +33,6 @@ class Player
         std::string getName();
     protected:
         sf::Vector2f relativePos2absolute(sf::Vector2f relCoord);
-		sf::Vector2f relativeSpeed2absolute(sf::Vector2f relCoord);
-        sf::Vector2f absolutePos2relative(sf::Vector2f absCoord);
-		sf::Vector2f absoluteSpeed2relative(sf::Vector2f absCoord);
     private:
         std::string m_name;
         Planet* planet; 

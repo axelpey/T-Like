@@ -15,6 +15,80 @@ Planet::Planet(int mainRadius, sf::Vector2f position) : SPlanet(mainRadius, posi
     m_mass = mainRadius*3.14*mainRadius;
 }
 
+bool isInABlock(sf::Vector2f& pos, float blockWidth, std::vector < std::vector < int > >& blocks)
+{
+	return blocks[(int)(pos.x / blockWidth)][(int)pos.y] != 0 ||
+		blocks[(int)(pos.x / blockWidth)][(int)pos.y + 1] != 0 ||
+		blocks[(int)(pos.x / blockWidth)][(int)pos.y + 2] != 0 ||
+		blocks[(int)(pos.x / blockWidth) + 1][(int)pos.y] != 0 ||
+		blocks[(int)(pos.x / blockWidth) + 1][(int)pos.y + 1] != 0 ||
+		blocks[(int)(pos.x / blockWidth) + 1][(int)pos.y + 2] != 0;
+}
+
+bool isOnTheGround(sf::Vector2f pos, float blockWidth, std::vector < std::vector < int > >& blocks, float epsmin)
+{
+	return blocks[(int)(pos.x / blockWidth)][(int)(pos.y - epsmin)] != 0 ||
+		blocks[(int)(pos.x / blockWidth) + 1][(int)(pos.y - epsmin)] != 0;
+}
+
+sf::Vector2f half(sf::Vector2f in)
+{
+	return sf::Vector2f(in.x / 2, in.y / 2);
+}
+
+float norm(sf::Vector2f in)
+{
+	return sqrt(pow(in.x, 2) + pow(in.y, 2));
+}
+
+std::pair<sf::Vector2f,bool> Planet::collidingBlocks(sf::Vector2f pos1, sf::Vector2f pos2)
+{
+	std::vector<sf::Vector2f> potentialCollidingBlocks;
+	bool touchedGround = false;
+
+	float blockWidth = 360 / (float)m_circonference;
+
+	float epsmin = 0.01 / m_circonference;
+
+	// FRENCH : on va procéder par dichotomie!
+
+	// Tout d'abord, on check la position d'arrivée!
+	// Il y a au maximum six cases qui peuvent être touchées par l'entité.
+	// On regarde si la position d'arrivée est convaincante, et si elle ne l'est pas,
+	// on revient en arrière d'une demi-distance puis on avance d'une demi-demi-distance,
+	// et ainsi de suite jusqu'à voir avec une bonne précision où on peut s'arrêter.
+	// Si on s'aperçoie qu'on touche le sol (écart avec un des deux blocs dessous inférieur à epsilon)
+	// on renvoie également le bool true.
+
+	// Cet algo est assez original mais ne fonctionnera que pour l'entité player et sa taille.
+
+	if (!isInABlock(pos2,blockWidth,m_blocks))
+	{ 
+		return std::pair<sf::Vector2f, bool> (pos2, isOnTheGround(pos2, blockWidth, m_blocks, epsmin));
+	}
+	else
+	{	// Collision à l'arrivée pos2, l'entité sera dans un bloc si elle continue, il faut donc revenir en arrière
+		// Début de la dichotomie
+		sf::Vector2f newPos = pos1 + half(pos2 - pos1);
+		sf::Vector2f lastValid = pos1;
+		sf::Vector2f diff = newPos - lastValid;
+		while (norm(diff) > epsmin)
+		{
+			diff = half(diff);
+			if (isInABlock(newPos, blockWidth, m_blocks))
+			{
+				newPos -= diff;
+			}
+			else
+			{
+				lastValid = newPos;
+				newPos += diff;
+			}
+		}
+		return std::pair<sf::Vector2f, bool>(lastValid, isOnTheGround(lastValid,blockWidth,m_blocks,epsmin));
+	}
+}
+
 void Planet::render(sf::RenderWindow* window)
 {
     window->draw(getCenterShape());
