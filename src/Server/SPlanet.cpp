@@ -103,6 +103,8 @@ sf::Packet& operator <<(sf::Packet& packet, SPlanet& planet)
             packet << blockID;
         }
     }
+
+	return packet;
 }
 
 sf::Packet& operator >>(sf::Packet& packet, SPlanet& planet)

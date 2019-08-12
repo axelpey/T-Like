@@ -152,7 +152,7 @@ void Server::command()
 
 bool Server::receiveUDP(sf::Packet& packet, int const& clientid)
 {
-
+	return true;
 }
 
 bool Server::receiveTCP(sf::Packet& packet, int const& clientid)
@@ -222,6 +222,8 @@ bool Server::receiveTCP(sf::Packet& packet, int const& clientid)
         cout << "Paquet reçu du client " << clientid << " non identifiable.";
         break;
     }
+
+	return true;
 }
 
 void Server::stop()
