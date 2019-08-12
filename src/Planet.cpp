@@ -98,9 +98,20 @@ void Planet::render(sf::RenderWindow* window)
     float const sinalpha = sinf(alpha);
     float const cosalpha = cosf(alpha);
     float const sinalphadiv2 = sinf(alpha/2);
+	float circonferencef = 2 * PI * m_mainRadius;
+	std::vector < float > posxiCompound;
+	std::vector < float > posyiCompound;
+
+	for (int i = 0; i < m_blocks.size(); i++)
+	{
+		posxiCompound.push_back(cosf((2 * PI / m_blocks.size()) * i + PI / 2));
+		posyiCompound.push_back(sinf((2 * PI / m_blocks.size()) * i + PI / 2));
+	}
 
     for(int j = 0; j < m_height; j++)
     {
+		float posJCompound = (m_centerRadius + j + 1);
+
         //La forme
         float DC = 2*(m_centerRadius+j)*sinalphadiv2;
         float EC = DC * sinalpha;
@@ -130,14 +141,21 @@ void Planet::render(sf::RenderWindow* window)
         float xC = xD + 2*ED;
         float yC = yD + 2*EC;*/
 
+		sf::ConvexShape block;
+
+		block.setPointCount(4);
+
+		block.setPoint(0, p1);
+		block.setPoint(1, p2);
+		block.setPoint(2, p3);
+		block.setPoint(3, p4);
+
         for(int i = 0; i < m_blocks.size(); i++)
         {
             if(m_blocks[i][j] == 0)
                 continue;
             //4 Choses � r�gler :
-            sf::ConvexShape block;
-
-            block.setPointCount(4);
+            
 
             //Design du bloc en fonction de son type
             switch(m_blocks[i][j])
@@ -161,20 +179,14 @@ void Planet::render(sf::RenderWindow* window)
                 break;
             }
 
-            block.setPoint(0,p1);
-            block.setPoint(1,p2);
-            block.setPoint(2,p3);
-            block.setPoint(3,p4);
-
             //La position
             //Le point 0 donc A est l'origine normalement
-            float posx = m_position.x-cos((2*PI/m_blocks.size())*i+PI/2)*(m_centerRadius+j+1);
-            float posy = m_position.y-sin((2*PI/m_blocks.size())*i+PI/2)*(m_centerRadius+j+1);
+            float posx = m_position.x-posxiCompound[i]*posJCompound;
+            float posy = m_position.y-posyiCompound[i]*posJCompound;
 
             block.setPosition(posx,posy);
 
             //La rotation
-            float circonferencef = 2*PI*m_mainRadius;
             float angle = i*(360/circonferencef);
 
             block.setRotation(angle);

@@ -2,7 +2,7 @@
 
 using namespace std;
 
-constexpr float G = 0.005;
+constexpr float G = 0.01;
 
 Player::Player()
 {
@@ -11,7 +11,7 @@ Player::Player()
 
 Player::Player(string name, int r_mass, Planet* r_planet)
 {
-    m_speed = 300;
+    m_speed = 2000;
     m_name = name;
     onGround = true;
     rectangle = sf::RectangleShape(sf::Vector2f(1,2));
@@ -59,7 +59,7 @@ void Player::handleDirection(bool right, bool left, bool jump)
     if (jump && onGround)
     {
         onGround = false;
-        relativeSpeed.y = +1.5;
+        relativeSpeed.y = +2;
     }
 }
 
@@ -94,6 +94,7 @@ void Player::playPhysics(int fps)
         float gnorm = G*(planet->getMass())*m_mass/(pow(distToCenter,2));
 		relativeSpeed.y -= dt*gnorm;
 		newPosition.y += dt*relativeSpeed.y;
+		std::cout << G << std::endl;
     }
 
 	// ----------------- Manage collisions
