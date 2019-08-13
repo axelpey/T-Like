@@ -25,13 +25,15 @@
 
 
 /**
+ DONE :
+  - Gestion des collisions. OK
+  - Gravit� qui attire le personnage : N�cessite de donner une masse au perso ainsi qu'� la plan�te. OK
+  - Capacit� de sauter. OK
+
  TODO :
   - R�cup�ration de l'adresse du serveur sur mon serveur perso ovh.
   - Changer le zoom sur la fen�tre gr�ce � la molette de la souris.
   - Cr�er un simple chat en bas � gauche / Canal de packet : un nouveau TCP.
-  - Gestion des collisions. OK
-  - Gravit� qui attire le personnage : N�cessite de donner une masse au perso ainsi qu'� la plan�te. OK
-  - Capacit� de sauter. OK
   - Ecran de chargement au d�but d� au fait qu'il faut charger depuis le serveur les infos sur la plan�te.
   - Le d�placement du personnage doit �tre ind�pendant de sa position relative � plan�te.
   - Sauvegarde et chargement de la plan�te.

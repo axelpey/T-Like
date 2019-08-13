@@ -2,10 +2,7 @@
 
 using namespace std;
 
-Planet::Planet()
-{
-
-}
+Planet::Planet() : Planet(21, sf::Vector2f(0, 0)) {}
 
 Planet::Planet(int mainRadius, sf::Vector2f position) : SPlanet(mainRadius, position)
 {

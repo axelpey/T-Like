@@ -2,10 +2,7 @@
 
 using namespace std;
 
-SPlanet::SPlanet()
-{
-    //ctor
-}
+SPlanet::SPlanet() : SPlanet(21, sf::Vector2f(0,0)) {}
 
 SPlanet::~SPlanet()
 {
