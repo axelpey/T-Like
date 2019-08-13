@@ -22,7 +22,19 @@ class Game
         bool start();
         bool connect();
         bool gameLoop(); ///Affichage du jeu, interaction avec le joueur
+
         void networkLoop(); ///Mise � jour des variables avec le serveur
+
+		// Packet sending methods
+		void sendDisconnectPacket(); // ID 0, means we're leaving.
+		void sendPlayerPacket(); // ID 1, contains player
+		void sendModifPacket(int x, int y, sf::Uint16 id); // ID 3, contains block modification info
+
+		// Packet handling methods
+		void handleDisconnectPacket(sf::Packet& packet); // ID 0, received when we need to disconnect
+		void handlePlayersPacket(sf::Packet& packet); // ID 1, contains other players info
+		void handlePlanetPacket(sf::Packet& packet); // ID 2, contains a whole planet
+		void handleModifPacket(sf::Packet& packet); // ID 3, contains modif infos
 
         void exit();
     protected:
