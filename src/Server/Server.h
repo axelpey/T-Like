@@ -51,8 +51,16 @@ class Server
         bool receiveUDP(sf::Packet& packet, int const& clientid);
         bool receiveTCP(sf::Packet& packet, int const& clientid);
 
+		void handleDisconnectionPacket(sf::Packet& packet, int const& clientid);
+		void handlePlayerPacket(sf::Packet& packet, int const& clientid);
+		void handleModifPacket(sf::Packet& packet, int const& clientid);
+
+		void sendDisconnectionPacket(int const& clientid, std::string reason);
+		void sendPlayersPacket(int const& clientid);
+		void sendPlanetPacket(int const& clientid);
+		void broadcastModifPacket(int const& clientid, int const& x, int const& y, sf::Uint16 blockID);
+
         void kick(int const& clientid);
-        void disconnect(int const& clientid);
     protected:
     private:
         SPlanet m_planet;

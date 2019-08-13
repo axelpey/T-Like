@@ -291,20 +291,16 @@ void Game::networkLoop()
                 break;
 
             case 1:
-            {
 				handlePlayersPacket(packet);
 				break;
-            }
 
             case 2:
 				handlePlanetPacket(packet);
                 break;
 
             case 3:
-            {
 				handleModifPacket(packet);
 				break;
-            }
 
             default:
                 cout << "Packet re�u non identifiable. Votre version du jeu n'est pas � jour avec celle du serveur." << endl;

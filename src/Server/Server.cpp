@@ -46,6 +46,8 @@ void Server::main()
                 {
                     clients.push_back(client);
 
+					int clientid = clients.size() - 1;
+
                     selector.add(*client);
 
                     cout << "Client connected! From " << client->getRemoteAddress() << ":" << client->getRemotePort() << endl;
@@ -56,10 +58,7 @@ void Server::main()
                     players.push_back(newPlayer);
 
                     ///Envoyer informations sur la planète
-                    sf::Packet planetPacket;
-                    planetPacket << sf::Uint8(2); // ID Packet
-                    planetPacket << m_planet;
-                    client->send(planetPacket);
+					sendPlanetPacket(clientid);
                 }
                 else
                 {
@@ -163,59 +162,15 @@ bool Server::receiveTCP(sf::Packet& packet, int const& clientid)
     switch(id)
     {
     case 0: //Packet for a client disconnecting
-        disconnect(clientid);
+		handleDisconnectionPacket(packet, clientid);
         break;
 
     case 1:
-        {
-        sf::TcpSocket& client = *clients[clientid];
-
-        SPlayer& player = *players[clientid];
-
-        packet >> player;
-
-        //On prépare le packet à envoyer au client
-        sf::Packet packet;
-        packet << sf::Uint8(1); //ID Packet
-        sf::Uint32 nbPlayers;
-        nbPlayers = players.size()-1;
-        packet << nbPlayers; //
-        for(int j = 0; j < players.size(); j++)
-        {
-            if(j!=clientid) // On envoie les infos des autres joueurs sauf celle du joueur qui va les recevoir.
-            {
-                SPlayer &player = *players[j];
-                packet << player;
-            }
-        }
-
-        //On envoie le packet
-        client.send(packet);
-        }
+		handlePlayerPacket(packet, clientid);
         break;
 
     case 3:
-        {
-        sf::Vector2i position;
-        packet >> position.x >> position.y;
-        sf::Uint16 blockID;
-        packet >> blockID;
-        m_planet.setBlock(position,blockID);
-
-        //On renvoie aux clients la position du bloc qui a été modifié.
-        sf::Packet modifPacket;
-        modifPacket << sf::Uint8(3);
-        modifPacket << position.x << position.y << blockID;
-        for(int j = 0; j < clients.size(); j++)
-        {
-            if(j!=clientid) // On envoie les infos des autres joueurs sauf celle du joueur qui va les recevoir.
-            {
-                sf::TcpSocket& client = *clients[j];
-                //cout << "Envoi paquet 3 au client " << clientid << " du port " << client.getRemotePort() << endl;
-                client.send(modifPacket);
-            }
-        }
-        }
+		handleModifPacket(packet, clientid);
         break;
 
     default:
@@ -232,11 +187,7 @@ void Server::stop()
 
     for(int i = 0; i < clients.size(); --i)
     {
-        sf::TcpSocket& socket = *clients[0];
-        sf::Packet srvSHUTDOWNPacket;
-        srvSHUTDOWNPacket << sf::Uint8(0); //ID packet qui demande la déconnexion du client.
-        srvSHUTDOWNPacket << string("Extinction du serveur.");
-        socket.send(srvSHUTDOWNPacket);
+		sendDisconnectionPacket(0, "Extinction du serveur.");
     }
 
     m_run = false;
@@ -249,14 +200,12 @@ bool Server::isRunning()
 
 void Server::kick(int const& clientid)
 {
-    sf::TcpSocket* socket = clients[clientid];
-    sf::Packet kickPacket;
-    kickPacket << sf::Uint8(0);
-    kickPacket << string("Vous avez été expulsé du serveur!");
-    socket->send(kickPacket);
+	sendDisconnectionPacket(clientid, "Vous avez été expulsé du serveur!");
 }
 
-void Server::disconnect(int const& clientid)
+// ----------------- Network - RECEIVE
+
+void Server::handleDisconnectionPacket(sf::Packet& packet, int const& clientid)
 {
     cout << "Player " << clientid << " is disconnecting!" << endl;
 
@@ -271,4 +220,86 @@ void Server::disconnect(int const& clientid)
     delete player;
     vector<SPlayer*>::iterator it2 = players.begin() + clientid - 1;
     players.erase(it2);
+}
+
+void Server::handlePlayerPacket(sf::Packet& packet, int const& clientid)
+{
+	SPlayer& player = *players[clientid];
+
+	packet >> player;
+
+	sendPlayersPacket(clientid);
+}
+
+void Server::handleModifPacket(sf::Packet& packet, int const& clientid)
+{
+	sf::Vector2i position;
+	packet >> position.x >> position.y;
+	sf::Uint16 blockID;
+	packet >> blockID;
+	m_planet.setBlock(position,blockID);
+
+	//Send to other clients the modifications
+	broadcastModifPacket(clientid, position.x, position.y, blockID);
+}
+
+// ---------------------- Network - SEND
+
+void Server::sendDisconnectionPacket(int const& clientid, string reason)
+{
+	sf::TcpSocket* socket = clients[clientid];
+	sf::Packet discoPacket;
+	discoPacket << sf::Uint8(0);
+	discoPacket << reason;
+	socket->send(discoPacket);
+}
+
+void Server::sendPlayersPacket(int const& clientid)
+{
+	//On prépare le packet à envoyer au client
+	sf::Packet packet;
+	packet << sf::Uint8(1); //ID Packet
+	sf::Uint32 nbPlayers;
+	nbPlayers = players.size() - 1;
+	packet << nbPlayers; //
+	for (int j = 0; j < players.size(); j++)
+	{
+		if (j != clientid) // On envoie les infos des autres joueurs sauf celle du joueur qui va les recevoir.
+		{
+			SPlayer& player = *players[j];
+			packet << player;
+		}
+	}
+
+	sf::TcpSocket* client = clients[clientid];
+
+	//On envoie le packet
+	client->send(packet);
+}
+
+void Server::sendPlanetPacket(int const& clientid)
+{
+	sf::Packet packet;
+	packet << sf::Uint8(2); // ID Packet
+	packet << m_planet;
+
+	sf::TcpSocket* client = clients[clientid];
+
+	client->send(packet);
+}
+
+void Server::broadcastModifPacket(int const& clientid, int const& x, int const& y, sf::Uint16 blockID)
+{
+	sf::Packet modifPacket;
+	modifPacket << sf::Uint8(3);
+	modifPacket << x << y << blockID;
+	for (int j = 0; j < clients.size(); j++)
+	{
+		if (j != clientid) // On envoie les infos des autres joueurs sauf celle du joueur qui va les recevoir.
+		{
+			sf::TcpSocket& client = *clients[j];
+			//cout << "Envoi paquet 3 au client " << clientid << " du port " << client.getRemotePort() << endl;
+			client.send(modifPacket);
+		}
+	}
 }
