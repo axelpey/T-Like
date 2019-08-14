@@ -8,7 +8,6 @@
 class Planet : public SPlanet
 {
     public:
-        Planet();
         Planet(int mainRadius, sf::Vector2f position);
         virtual ~Planet();
 

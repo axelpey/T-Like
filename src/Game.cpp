@@ -2,11 +2,14 @@
 
 using namespace std;
 
+void emptyPlayerList(vector<Player*> playerList);
+
 Game::Game() : m_window(sf::VideoMode(1280, 720), "Initialisation..."),
     m_zoom(20),
     m_visibleArea(0, 0, m_window.getSize().x/m_zoom, m_window.getSize().y/m_zoom),
     m_view(m_visibleArea),
     m_running(false),
+	m_planet(18, sf::Vector2f(0, 0)),
     m_networkThread(&Game::networkLoop,this)
 {
     string ip;
@@ -34,13 +37,17 @@ Game::Game() : m_window(sf::VideoMode(1280, 720), "Initialisation..."),
     }
     ifs.close();
 
-    m_planet = Planet(18, sf::Vector2f(0,0));
     m_player = Player(name, 60, &m_planet);
 
     m_window.setView(m_view);
     m_window.setFramerateLimit(60);
 
     m_serverAdress = sf::IpAddress(ip);
+}
+
+Game::~Game()
+{
+	emptyPlayerList(m_otherPlayers);
 }
 
 void emptyPlayerList(vector<Player*> playerList)
@@ -50,11 +57,6 @@ void emptyPlayerList(vector<Player*> playerList)
 		delete playerList[i];
 	}
 	playerList.clear();
-}
-
-Game::~Game()
-{
-	emptyPlayerList(m_otherPlayers);
 }
 
 bool Game::start() ///D�marrage du jeu

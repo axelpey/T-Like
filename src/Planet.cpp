@@ -2,9 +2,6 @@
 
 using namespace std;
 
-Planet::Planet()
-{}
-
 Planet::Planet(int mainRadius, sf::Vector2f position) : SPlanet(mainRadius, position)
 {
     centerShape = sf::CircleShape(m_centerRadius);
@@ -13,7 +10,10 @@ Planet::Planet(int mainRadius, sf::Vector2f position) : SPlanet(mainRadius, posi
     m_mass = mainRadius*3.14*mainRadius;
 }
 
-bool isInABlock(sf::Vector2f& pos, float blockWidth, std::vector < std::vector < int > >& blocks)
+Planet::~Planet()
+{}
+
+bool isInABlock(sf::Vector2f& pos, float blockWidth, vector < vector < int > >& blocks)
 {
 	return blocks[(int)(pos.x / blockWidth)][(int)pos.y] != 0 ||
 		blocks[(int)(pos.x / blockWidth)][(int)pos.y + 1] != 0 ||
@@ -23,7 +23,7 @@ bool isInABlock(sf::Vector2f& pos, float blockWidth, std::vector < std::vector <
 		blocks[(int)(pos.x / blockWidth) + 1][(int)pos.y + 2] != 0;
 }
 
-bool isOnTheGround(sf::Vector2f pos, float blockWidth, std::vector < std::vector < int > >& blocks, float epsmin)
+bool isOnTheGround(sf::Vector2f pos, float blockWidth, vector < vector < int > >& blocks, float epsmin)
 {
 	return blocks[(int)(pos.x / blockWidth)][(int)(pos.y - epsmin)] != 0 ||
 		blocks[(int)(pos.x / blockWidth) + 1][(int)(pos.y - epsmin)] != 0;
@@ -39,9 +39,9 @@ float norm(sf::Vector2f in)
 	return sqrt(pow(in.x, 2) + pow(in.y, 2));
 }
 
-std::pair<sf::Vector2f,bool> Planet::collidingBlocks(sf::Vector2f pos1, sf::Vector2f pos2)
+pair<sf::Vector2f,bool> Planet::collidingBlocks(sf::Vector2f pos1, sf::Vector2f pos2)
 {
-	std::vector<sf::Vector2f> potentialCollidingBlocks;
+	vector<sf::Vector2f> potentialCollidingBlocks;
 	bool touchedGround = false;
 
 	float blockWidth = 360 / (float)m_circonference;
@@ -62,7 +62,7 @@ std::pair<sf::Vector2f,bool> Planet::collidingBlocks(sf::Vector2f pos1, sf::Vect
 
 	if (!isInABlock(pos2,blockWidth,m_blocks))
 	{ 
-		return std::pair<sf::Vector2f, bool> (pos2, isOnTheGround(pos2, blockWidth, m_blocks, epsmin));
+		return pair<sf::Vector2f, bool> (pos2, isOnTheGround(pos2, blockWidth, m_blocks, epsmin));
 	}
 	else
 	{	// Collision à l'arrivée pos2, l'entité sera dans un bloc si elle continue, il faut donc revenir en arrière
@@ -83,7 +83,7 @@ std::pair<sf::Vector2f,bool> Planet::collidingBlocks(sf::Vector2f pos1, sf::Vect
 				newPos += diff;
 			}
 		}
-		return std::pair<sf::Vector2f, bool>(lastValid, isOnTheGround(lastValid,blockWidth,m_blocks,epsmin));
+		return pair<sf::Vector2f, bool>(lastValid, isOnTheGround(lastValid,blockWidth,m_blocks,epsmin));
 	}
 }
 
@@ -97,8 +97,8 @@ void Planet::render(sf::RenderWindow* window)
     float const cosalpha = cosf(alpha);
     float const sinalphadiv2 = sinf(alpha/2);
 	float circonferencef = 2 * PI * m_mainRadius;
-	std::vector < float > posxiCompound;
-	std::vector < float > posyiCompound;
+	vector < float > posxiCompound;
+	vector < float > posyiCompound;
 
 	for (int i = 0; i < m_blocks.size(); i++)
 	{
@@ -202,9 +202,4 @@ sf::CircleShape Planet::getCenterShape()
 float Planet::getMass()
 {
     return m_mass;
-}
-
-Planet::~Planet()
-{
-    //dtor
 }

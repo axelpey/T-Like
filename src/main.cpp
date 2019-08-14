@@ -60,9 +60,7 @@ int main()
     Game instance;
 
     if(SERVER==1)
-    {
         serverThread.launch();
-    }
 
     if(!instance.start())
         return EXIT_FAILURE;

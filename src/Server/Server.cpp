@@ -10,9 +10,7 @@ Server::Server(int port) : m_mainThread(&Server::main,this)
 }
 
 Server::~Server()
-{
-    //dtor
-}
+{}
 
 void Server::launch()
 {

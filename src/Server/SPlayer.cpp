@@ -3,14 +3,10 @@
 using namespace std;
 
 SPlayer::SPlayer()
-{
-
-}
+{}
 
 SPlayer::~SPlayer()
-{
-    //dtor
-}
+{}
 
 void SPlayer::setPosition(int x, int y)
 {

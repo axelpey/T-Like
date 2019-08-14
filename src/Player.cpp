@@ -7,15 +7,13 @@ constexpr float G = 0.01;
 Player::Player()
 {}
 
-Player::Player(string name, int r_mass, Planet* r_planet) : Entity(name, r_mass, r_planet)
-{
-    m_speed = 2000;
-}
+Player::Player(string name, int r_mass, Planet* r_planet) : 
+	Entity(name, r_mass, r_planet),
+	m_speed(2000)
+{}
 
 Player::~Player()
-{
-    //dtor
-}
+{}
 
 void Player::handleDirection(bool right, bool left, bool jump)
 {
