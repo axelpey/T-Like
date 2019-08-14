@@ -5,13 +5,10 @@ using namespace std;
 constexpr float G = 0.01;
 
 Player::Player()
-{
+{}
 
-}
-
-Player::Player(string name, int r_mass, Planet* r_planet)
+Player::Player(string name, int r_mass, Planet* r_planet) : Entity(name, r_mass, r_planet)
 {
-	Entity(name, r_mass, r_planet);
     m_speed = 2000;
 }
 

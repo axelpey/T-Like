@@ -104,6 +104,8 @@ bool Game::gameLoop()
         cout << "Musique non trouv�e. Pas de lecture de musique." << endl;
     }
 
+
+
     while (m_running)
     {
 
@@ -173,7 +175,7 @@ bool Game::gameLoop()
 ///----------------------------------------------Events souris-------------------------------------------------------------------------------------------///
 
             case sf::Event::MouseButtonPressed:
-
+			{
 				//Determine where we clicked in the game
 				sf::Vector2f realPosition = m_window.mapPixelToCoords(sf::Vector2i(event.mouseButton.x, event.mouseButton.y));
 
@@ -191,25 +193,29 @@ bool Game::gameLoop()
 				int x = (angle / 360) * m_planet.getCirconference();
 				int y = (int)height;
 
-                if(event.mouseButton.button == sf::Mouse::Right)
-                {
-                    m_planet.setBlock(sf::Vector2i(x,y),0);
+				if (event.mouseButton.button == sf::Mouse::Right)
+				{
+					m_planet.setBlock(sf::Vector2i(x, y), 0);
 					sendModifPacket(x, y, 0);
-                }
+				}
 
-                if(event.mouseButton.button == sf::Mouse::Left)
-                {
-                    m_planet.setBlock(sf::Vector2i(x,y),2);
-					sendModifPacket(x,y,2);
-                }
+				if (event.mouseButton.button == sf::Mouse::Left)
+				{
+					m_planet.setBlock(sf::Vector2i(x, y), 2);
+					sendModifPacket(x, y, 2);
+				}
 
-                break;
+				break;
+			}
 
 ///--------------------------------------Restes----------------------------------------------------------------------------------------------------------///
             case sf::Event::Resized:
                 // on met � jour la vue, avec la nouvelle taille de la fen�tre
 
                 break;
+
+			default:
+				break;
             }
         }
 
