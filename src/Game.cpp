@@ -205,6 +205,12 @@ bool Game::gameLoop()
 				int x = (angle / 360) * m_planet.getCirconference();
 				int y = (int)height;
 
+				if (x >= m_planet.getCirconference()
+					|| y>= m_planet.getRadius())
+				{
+					break;
+				}
+
 				if (event.mouseButton.button == sf::Mouse::Right)
 				{
 					m_planet.setBlock(sf::Vector2i(x, y), 0);
