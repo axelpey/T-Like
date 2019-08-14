@@ -17,6 +17,7 @@ class SPlanet
         virtual ~SPlanet();
 
         int getRadius();
+		int getMaxHeight();
         sf::Vector2f getCenterPoint();
         int getCirconference();
 

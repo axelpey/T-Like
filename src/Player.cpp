@@ -2,7 +2,7 @@
 
 using namespace std;
 
-constexpr float G = 0.01;
+constexpr double G = 0.01;
 
 Player::Player()
 {}

@@ -25,6 +25,12 @@ class Game
 
         void networkLoop(); ///Mise � jour des variables avec le serveur
 
+		// Render
+		void render();
+
+		// Handle events
+		void handleClick(sf::Event event);
+
 		// Packet sending methods
 		void sendDisconnectPacket(); // ID 0, means we're leaving.
 		void sendPlayerPacket(); // ID 1, contains player

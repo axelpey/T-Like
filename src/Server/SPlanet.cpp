@@ -13,7 +13,7 @@ SPlanet::SPlanet(int mainRadius, sf::Vector2f position)
 {
     m_mainRadius = mainRadius;
     m_position = position;
-    m_circonference = 2*PI*m_mainRadius;
+    m_circonference = (int)2*PI*m_mainRadius;
     m_centerRadius = (m_mainRadius/3)*2;
     m_height = (m_mainRadius-m_centerRadius)*2;
 
@@ -87,6 +87,11 @@ int SPlanet::getRadius()
     return m_mainRadius;
 }
 
+int SPlanet::getMaxHeight()
+{
+	return m_height;
+}
+
 sf::Packet& operator <<(sf::Packet& packet, SPlanet& planet)
 {
     sf::Uint32 mainRadius = planet.getRadius();
@@ -112,7 +117,7 @@ sf::Packet& operator >>(sf::Packet& packet, SPlanet& planet)
     sf::Vector2f position;
     packet >> position.x >> position.y;
     planet.m_position = position;
-    planet.m_circonference = 2*PI*planet.m_mainRadius;
+    planet.m_circonference = (int)2*PI*planet.m_mainRadius;
     planet.m_centerRadius = (planet.m_mainRadius/3)*2;
     planet.m_height = (planet.m_mainRadius-planet.m_centerRadius)*2;
 

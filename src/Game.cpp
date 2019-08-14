@@ -120,7 +120,6 @@ bool Game::gameLoop()
 
     while (m_running)
     {
-
         sf::Event event;
         while (m_window.pollEvent(event))
         {
@@ -187,44 +186,8 @@ bool Game::gameLoop()
 ///----------------------------------------------Events souris-------------------------------------------------------------------------------------------///
 
             case sf::Event::MouseButtonPressed:
-			{
-				//Determine where we clicked in the game
-				sf::Vector2f realPosition = m_window.mapPixelToCoords(sf::Vector2i(event.mouseButton.x, event.mouseButton.y));
-
-				//Determine relative position on the planet of the block we clicked
-				float adjacent = realPosition.x;
-				float oppose = realPosition.y;
-				float distance = sqrt(pow(realPosition.x, 2) + pow(realPosition.y, 2));
-				float height = distance - (m_planet.getRadius() * 2) / 3;
-				float angle;
-				if (adjacent >= 0)
-					angle = 90 + atan(oppose / adjacent) / PI * 180;
-				else
-					angle = 270 + atan(oppose / adjacent) / PI * 180;
-
-				int x = (angle / 360) * m_planet.getCirconference();
-				int y = (int)height;
-
-				if (x >= m_planet.getCirconference()
-					|| y>= m_planet.getRadius())
-				{
-					break;
-				}
-
-				if (event.mouseButton.button == sf::Mouse::Right)
-				{
-					m_planet.setBlock(sf::Vector2i(x, y), 0);
-					sendModifPacket(x, y, 0);
-				}
-
-				if (event.mouseButton.button == sf::Mouse::Left)
-				{
-					m_planet.setBlock(sf::Vector2i(x, y), 2);
-					sendModifPacket(x, y, 2);
-				}
-
+				handleClick(event);
 				break;
-			}
 
 ///--------------------------------------Restes----------------------------------------------------------------------------------------------------------///
             case sf::Event::Resized:
@@ -249,25 +212,7 @@ bool Game::gameLoop()
 
 ///--------------------------------------Render----------------------------------------------------------------------------------------------------------///
 
-
-
-        m_window.clear();
-
-        //Render planet
-        m_planet.render(&m_window);
-		m_player.render(&m_window);
-
-        for(int i = 0; i < m_otherPlayers.size(); i++)
-        {
-            Player* player = m_otherPlayers[i];
-            player->render(&m_window);
-        }
-
-        sf::FloatRect visibleArea(0, 0, m_window.getSize().x/m_zoom, m_window.getSize().y/m_zoom);
-        m_view = sf::View(visibleArea);
-        m_view.setRotation(m_player.getAngle());
-        m_view.setCenter(m_player.getAbsolutePosition().x, m_player.getAbsolutePosition().y);
-        m_window.setView(m_view);
+		render();
 
 ///-------------------------------------------Affichage des FPS------------------------------------------------------------------------------------------///
 
@@ -291,6 +236,64 @@ bool Game::gameLoop()
     m_window.close();
 
 	return true;
+}
+
+void Game::render()
+{
+	m_window.clear();
+
+	m_planet.render(&m_window);
+	m_player.render(&m_window);
+
+	for (int i = 0; i < m_otherPlayers.size(); i++)
+	{
+		Player* player = m_otherPlayers[i];
+		player->render(&m_window);
+	}
+
+	sf::FloatRect visibleArea(0, 0, m_window.getSize().x / m_zoom, m_window.getSize().y / m_zoom);
+	m_view = sf::View(visibleArea);
+	m_view.setRotation(m_player.getAngle());
+	m_view.setCenter(m_player.getAbsolutePosition().x, m_player.getAbsolutePosition().y);
+	m_window.setView(m_view);
+}
+
+void Game::handleClick(sf::Event event)
+{
+	//Determine where we clicked in the game
+	sf::Vector2f realPosition = m_window.mapPixelToCoords(sf::Vector2i(event.mouseButton.x, event.mouseButton.y));
+
+	//Determine relative position on the planet of the block we clicked
+	float adjacent = realPosition.x;
+	float oppose = realPosition.y;
+	float distance = sqrt(pow(realPosition.x, 2) + pow(realPosition.y, 2));
+	float height = distance - (m_planet.getRadius() * 2) / 3;
+	float angle;
+	if (adjacent >= 0)
+		angle = 90 + atan(oppose / adjacent) / PI * 180;
+	else
+		angle = 270 + atan(oppose / adjacent) / PI * 180;
+
+	int x = (angle / 360) * m_planet.getCirconference();
+	int y = (int)height;
+
+	if (x >= m_planet.getCirconference()
+		|| y >= m_planet.getMaxHeight())
+	{
+		return;
+	}
+
+	if (event.mouseButton.button == sf::Mouse::Right)
+	{
+		m_planet.setBlock(sf::Vector2i(x, y), 0);
+		sendModifPacket(x, y, 0);
+	}
+
+	if (event.mouseButton.button == sf::Mouse::Left)
+	{
+		m_planet.setBlock(sf::Vector2i(x, y), 2);
+		sendModifPacket(x, y, 2);
+	}
 }
 
 void Game::networkLoop()
