@@ -72,6 +72,9 @@ bool Game::start() ///D�marrage du jeu
 
     m_networkThread.wait();
 
+	sendDisconnectPacket();
+	m_tcpSocket.disconnect();
+
     return true;
 }
 
@@ -323,10 +326,6 @@ void Game::networkLoop()
         {}
     }
     //On envoie au serveur qu'on se d�connecte
-
-	sendDisconnectPacket();
-
-    m_tcpSocket.disconnect();
 }
 
 void Game::exit()

@@ -213,12 +213,12 @@ void Server::handleDisconnectionPacket(sf::Packet& packet, int const& clientid)
     sf::TcpSocket* socket = clients[clientid];
     socket->disconnect();
     delete socket;
-    vector<sf::TcpSocket*>::iterator it = clients.begin() + clientid - 1; //Iterateur sur le client dont l'id est clientid.
+    vector<sf::TcpSocket*>::iterator it = clients.begin() + clientid; //Iterateur sur le client dont l'id est clientid.
     clients.erase(it);
 
     SPlayer* player = players[clientid];
     delete player;
-    vector<SPlayer*>::iterator it2 = players.begin() + clientid - 1;
+    vector<SPlayer*>::iterator it2 = players.begin() + clientid;
     players.erase(it2);
 }
 
