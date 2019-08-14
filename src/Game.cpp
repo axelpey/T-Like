@@ -37,17 +37,24 @@ Game::Game() : m_window(sf::VideoMode(1280, 720), "Initialisation..."),
     m_planet = Planet(18, sf::Vector2f(0,0));
     m_player = Player(name, 60, &m_planet);
 
-    m_players.push_back(m_player);
-
     m_window.setView(m_view);
     m_window.setFramerateLimit(60);
 
     m_serverAdress = sf::IpAddress(ip);
 }
 
+void emptyPlayerList(vector<Player*> playerList)
+{
+	for (int i = 0; i < playerList.size(); i++)
+	{
+		delete playerList[i];
+	}
+	playerList.clear();
+}
+
 Game::~Game()
 {
-    //dtor
+	emptyPlayerList(m_otherPlayers);
 }
 
 bool Game::start() ///D�marrage du jeu
@@ -226,10 +233,8 @@ bool Game::gameLoop()
 ///-------------------------------------Physics----------------------------------------------------------------------------------------------------------///
 
         m_player.playPhysics(averagefps);
-        for(int i = 0; i < m_players.size(); i ++)
-        {
-            m_players[i].playPhysics(fps);
-        }
+
+		// No need to run physics for other players
 
 ///--------------------------------------Render----------------------------------------------------------------------------------------------------------///
 
@@ -241,10 +246,10 @@ bool Game::gameLoop()
         m_planet.render(&m_window);
 		m_player.render(&m_window);
 
-        for(int i = 0; i < m_players.size(); i++)
+        for(int i = 0; i < m_otherPlayers.size(); i++)
         {
-            Player &player = m_players[i];
-            player.render(&m_window);
+            Player* player = m_otherPlayers[i];
+            player->render(&m_window);
         }
 
         sf::FloatRect visibleArea(0, 0, m_window.getSize().x/m_zoom, m_window.getSize().y/m_zoom);
@@ -327,6 +332,7 @@ void Game::networkLoop()
 void Game::exit()
 {
     m_running = false;
+	emptyPlayerList(m_otherPlayers);
 }
 
 // -------------------- Packets methods - SEND
@@ -376,21 +382,21 @@ void Game::handlePlayersPacket(sf::Packet& packet)
 {
 	sf::Uint8 nbPlayers;
 	packet >> nbPlayers;
-	if (nbPlayers != m_players.size())
+	if (nbPlayers != m_otherPlayers.size())
 	{
-		m_players.clear();
+		emptyPlayerList(m_otherPlayers);
 		for (int i = 0; i < nbPlayers; i++)
 		{
 			Player player("n/a", 0, &m_planet);
 			packet >> player;
-			m_players.push_back(player);
+			m_otherPlayers.push_back(&player);
 		}
 	}
 	else
 	{
 		for (int i = 0; i < nbPlayers; i++)
 		{
-			packet >> m_players[i];
+			packet >> *m_otherPlayers[i];
 		}
 	}
 }

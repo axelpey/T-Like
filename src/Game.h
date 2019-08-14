@@ -54,7 +54,7 @@ class Game
 
         Planet m_planet;
         Player m_player;
-        std::vector <Player> m_players;
+        std::vector <Player*> m_otherPlayers;
 };
 
 #endif // GAME_H
