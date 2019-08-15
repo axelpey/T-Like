@@ -55,6 +55,7 @@ void Entity::playPhysics(int fps)
 	if (onGround)
 	{
 		newPosition.x += dt * relativeSpeed.x;
+		relativeSpeed.y = 0;
 	}
 
 
