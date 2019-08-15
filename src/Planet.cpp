@@ -26,23 +26,24 @@ bool isInABlock(sf::Vector2f& pos, float blockWidth,
 	vector < vector < int > >& blocks,
 	const int& circonference, int const& maxHeight)
 {
-	cout << (int)floorf(pos.x / blockWidth) % circonference << endl;
-	cout << pos.x / blockWidth << endl;
-	cout << circonference << endl;
-	return blocks[modulus((int)floorf(pos.x / blockWidth),circonference)][min((int)pos.y,maxHeight-1)] != 0 ||
+	return (pos.y <= maxHeight)
+		&& (
+		blocks[modulus((int)floorf(pos.x / blockWidth),circonference)][min((int)pos.y,maxHeight - 1)] != 0 ||
 		blocks[modulus((int)floorf(pos.x / blockWidth), circonference)][min((int)pos.y + 1, maxHeight - 1)] != 0 ||
 		blocks[modulus((int)floorf(pos.x / blockWidth), circonference)][min((int)pos.y + 2, maxHeight - 1)] != 0 ||
 		blocks[modulus((int)floorf(pos.x / blockWidth) + 1, circonference)][min((int)pos.y, maxHeight - 1)] != 0 ||
 		blocks[modulus((int)floorf(pos.x / blockWidth) + 1, circonference)][min((int)pos.y + 1, maxHeight - 1)] != 0 ||
-		blocks[modulus((int)floorf(pos.x / blockWidth) + 1, circonference)][min((int)pos.y + 2, maxHeight - 1)] != 0;
+		blocks[modulus((int)floorf(pos.x / blockWidth) + 1, circonference)][min((int)pos.y + 2, maxHeight - 1)] != 0);
 }
 
 bool isOnTheGround(sf::Vector2f pos, float blockWidth,
 	vector < vector < int > >& blocks, float epsmin,
 	const int& circonference, const int& maxHeight)
 {
-	return blocks[modulus((int)floorf(pos.x / blockWidth), circonference)][min((int)(pos.y - epsmin), maxHeight - 1)] != 0 ||
-		blocks[modulus((int)floorf(pos.x / blockWidth) + 1, circonference)][min((int)(pos.y - epsmin), maxHeight - 1)] != 0;
+	return (pos.y <= maxHeight + 2*epsmin)
+		&& (
+		blocks[modulus((int)floorf(pos.x / blockWidth), circonference)][min((int)(pos.y - epsmin), maxHeight - 1)] != 0 ||
+		blocks[modulus((int)floorf(pos.x / blockWidth) + 1, circonference)][min((int)(pos.y - epsmin), maxHeight - 1)] != 0);
 }
 
 sf::Vector2f half(sf::Vector2f in)
@@ -57,9 +58,6 @@ float norm(sf::Vector2f in)
 
 pair<sf::Vector2f,bool> Planet::collidingBlocks(sf::Vector2f pos1, sf::Vector2f pos2)
 {
-	vector<sf::Vector2f> potentialCollidingBlocks;
-	bool touchedGround = false;
-
 	float blockWidth = 360 / (float)m_circonference;
 
 	float epsmin = 0.01 / m_circonference;

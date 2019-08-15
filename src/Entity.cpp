@@ -70,7 +70,6 @@ void Entity::playPhysics(int fps)
 		float gnorm = G * (planet->getMass()) * m_mass / (pow(distToCenter, 2));
 		relativeSpeed.y -= dt * gnorm;
 		newPosition.y += dt * relativeSpeed.y;
-		std::cout << G << std::endl;
 	}
 
 	// ----------------- Manage collisions
