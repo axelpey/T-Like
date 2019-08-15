@@ -13,20 +13,36 @@ Planet::Planet(int mainRadius, sf::Vector2f position) : SPlanet(mainRadius, posi
 Planet::~Planet()
 {}
 
-bool isInABlock(sf::Vector2f& pos, float blockWidth, vector < vector < int > >& blocks)
+// Apparently C++ modulus a%b returns negative value when given a negative. We need our own modulus
+int modulus(int const& a, int const& b)
 {
-	return blocks[(int)(pos.x / blockWidth)][(int)pos.y] != 0 ||
-		blocks[(int)(pos.x / blockWidth)][(int)pos.y + 1] != 0 ||
-		blocks[(int)(pos.x / blockWidth)][(int)pos.y + 2] != 0 ||
-		blocks[(int)(pos.x / blockWidth) + 1][(int)pos.y] != 0 ||
-		blocks[(int)(pos.x / blockWidth) + 1][(int)pos.y + 1] != 0 ||
-		blocks[(int)(pos.x / blockWidth) + 1][(int)pos.y + 2] != 0;
+	if (a >= 0)
+		return a % b;
+	else
+		return -(a % b);
 }
 
-bool isOnTheGround(sf::Vector2f pos, float blockWidth, vector < vector < int > >& blocks, float epsmin)
+bool isInABlock(sf::Vector2f& pos, float blockWidth,
+	vector < vector < int > >& blocks,
+	const int& circonference, int const& maxHeight)
 {
-	return blocks[(int)(pos.x / blockWidth)][(int)(pos.y - epsmin)] != 0 ||
-		blocks[(int)(pos.x / blockWidth) + 1][(int)(pos.y - epsmin)] != 0;
+	cout << (int)floorf(pos.x / blockWidth) % circonference << endl;
+	cout << pos.x / blockWidth << endl;
+	cout << circonference << endl;
+	return blocks[modulus((int)floorf(pos.x / blockWidth),circonference)][min((int)pos.y,maxHeight-1)] != 0 ||
+		blocks[modulus((int)floorf(pos.x / blockWidth), circonference)][min((int)pos.y + 1, maxHeight - 1)] != 0 ||
+		blocks[modulus((int)floorf(pos.x / blockWidth), circonference)][min((int)pos.y + 2, maxHeight - 1)] != 0 ||
+		blocks[modulus((int)floorf(pos.x / blockWidth) + 1, circonference)][min((int)pos.y, maxHeight - 1)] != 0 ||
+		blocks[modulus((int)floorf(pos.x / blockWidth) + 1, circonference)][min((int)pos.y + 1, maxHeight - 1)] != 0 ||
+		blocks[modulus((int)floorf(pos.x / blockWidth) + 1, circonference)][min((int)pos.y + 2, maxHeight - 1)] != 0;
+}
+
+bool isOnTheGround(sf::Vector2f pos, float blockWidth,
+	vector < vector < int > >& blocks, float epsmin,
+	const int& circonference, const int& maxHeight)
+{
+	return blocks[modulus((int)floorf(pos.x / blockWidth), circonference)][min((int)(pos.y - epsmin), maxHeight - 1)] != 0 ||
+		blocks[modulus((int)floorf(pos.x / blockWidth) + 1, circonference)][min((int)(pos.y - epsmin), maxHeight - 1)] != 0;
 }
 
 sf::Vector2f half(sf::Vector2f in)
@@ -60,9 +76,9 @@ pair<sf::Vector2f,bool> Planet::collidingBlocks(sf::Vector2f pos1, sf::Vector2f 
 
 	// Cet algo est assez original mais ne fonctionnera que pour l'entité player et sa taille.
 
-	if (!isInABlock(pos2,blockWidth,m_blocks))
+	if (!isInABlock(pos2,blockWidth,m_blocks,m_circonference,m_height))
 	{ 
-		return pair<sf::Vector2f, bool> (pos2, isOnTheGround(pos2, blockWidth, m_blocks, epsmin));
+		return pair<sf::Vector2f, bool> (pos2, isOnTheGround(pos2, blockWidth, m_blocks, epsmin, m_circonference, m_height));
 	}
 	else
 	{	// Collision à l'arrivée pos2, l'entité sera dans un bloc si elle continue, il faut donc revenir en arrière
@@ -73,7 +89,7 @@ pair<sf::Vector2f,bool> Planet::collidingBlocks(sf::Vector2f pos1, sf::Vector2f 
 		while (norm(diff) > epsmin)
 		{
 			diff = half(diff);
-			if (isInABlock(newPos, blockWidth, m_blocks))
+			if (isInABlock(newPos, blockWidth, m_blocks, m_circonference, m_height))
 			{
 				newPos -= diff;
 			}
@@ -83,7 +99,7 @@ pair<sf::Vector2f,bool> Planet::collidingBlocks(sf::Vector2f pos1, sf::Vector2f 
 				newPos += diff;
 			}
 		}
-		return pair<sf::Vector2f, bool>(lastValid, isOnTheGround(lastValid,blockWidth,m_blocks,epsmin));
+		return pair<sf::Vector2f, bool>(lastValid, isOnTheGround(lastValid,blockWidth,m_blocks,epsmin,m_circonference,m_height));
 	}
 }
 

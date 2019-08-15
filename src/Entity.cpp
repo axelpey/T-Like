@@ -80,15 +80,19 @@ void Entity::playPhysics(int fps)
 	res = planet->collidingBlocks(relativePos, newPosition);
 
 	relativePos = res.first;
+	if (relativePos.x > 360)
+	{
+		relativePos.x -= 360;
+	}
+	if (relativePos.x < 0)
+	{
+		relativePos.x += 360;
+	}
 	onGround = res.second;
 }
 
 void Entity::render(sf::RenderWindow* window)
 {
-	if (relativePos.x > 360)
-	{
-		relativePos.x = relativePos.x - 360;
-	}
 	sf::Text nameText;
 	float csize = 100;
 	nameText.setCharacterSize(csize);
