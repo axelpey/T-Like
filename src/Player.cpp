@@ -19,21 +19,17 @@ void Player::handleDirection(bool right, bool left, bool jump)
 {
     if (onGround)
     {
-        relativeSpeed.x = 0;
-    }
-    if (right && onGround)
-    {
-        relativeSpeed.x = (m_speed/relativePos.y)*(PI/180);
-    }
-    else if (left && onGround)
-    {
-        relativeSpeed.x = -(m_speed/relativePos.y)*(PI/180);
-    }
+		relativeSpeed.x = 0;
 
-    if (jump && onGround)
-    {
-        onGround = false;
-        relativeSpeed.y = +2;
+		if (right)
+			relativeSpeed.x = (m_speed / relativePos.y) * (PI / 180);
+		if (left)
+			relativeSpeed.x = -(m_speed / relativePos.y) * (PI / 180);
+		if (jump)
+		{
+			onGround = false;
+			relativeSpeed.y = +2;
+		}
     }
 }
 

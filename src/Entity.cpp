@@ -69,6 +69,7 @@ void Entity::playPhysics(int fps)
 			+ planet->getCenterShape().getRadius() + rectangle.getSize().y / 2;
 		float gnorm = G * (planet->getMass()) * m_mass / (pow(distToCenter, 2));
 		relativeSpeed.y -= dt * gnorm;
+		newPosition.x += dt * relativeSpeed.x;
 		newPosition.y += dt * relativeSpeed.y;
 	}
 
