@@ -10,7 +10,16 @@ Server::Server(int port) : m_mainThread(&Server::main,this)
 }
 
 Server::~Server()
-{}
+{
+	for (vector<sf::TcpSocket*>::iterator it = clients.begin(); it != clients.end(); it++)
+	{
+		delete *it;
+	}
+	for (vector<SPlayer*>::iterator it = players.begin(); it != players.end(); it++)
+	{
+		delete *it;
+	}
+}
 
 void Server::launch()
 {
@@ -222,9 +231,7 @@ void Server::handleDisconnectionPacket(sf::Packet& packet, int const& clientid)
 
 void Server::handlePlayerPacket(sf::Packet& packet, int const& clientid)
 {
-	SPlayer& player = *players[clientid];
-
-	packet >> player;
+	packet >> *(players[clientid]);
 
 	sendPlayersPacket(clientid);
 }
@@ -257,7 +264,7 @@ void Server::sendPlayersPacket(int const& clientid)
 	//On prépare le packet à envoyer au client
 	sf::Packet packet;
 	packet << sf::Uint8(1); //ID Packet
-	sf::Uint32 nbPlayers;
+	sf::Uint8 nbPlayers;
 	nbPlayers = players.size() - 1;
 	packet << nbPlayers; //
 	for (int j = 0; j < players.size(); j++)

@@ -245,6 +245,8 @@ void Game::render()
 	m_planet.render(&m_window);
 	m_player.render(&m_window);
 
+	cout << m_otherPlayers.size() << endl;
+
 	for (int i = 0; i < m_otherPlayers.size(); i++)
 	{
 		Player* player = m_otherPlayers[i];
@@ -392,14 +394,15 @@ void Game::handlePlayersPacket(sf::Packet& packet)
 {
 	sf::Uint8 nbPlayers;
 	packet >> nbPlayers;
+	cout << "nbplayers = " << (int)nbPlayers << endl;
 	if (nbPlayers != m_otherPlayers.size())
 	{
 		emptyPlayerList(m_otherPlayers);
 		for (int i = 0; i < nbPlayers; i++)
 		{
-			Player player("n/a", 0, &m_planet);
-			packet >> player;
-			m_otherPlayers.push_back(&player);
+			Player *player = new Player("n/a", 0, &m_planet);
+			packet >> *player;
+			m_otherPlayers.push_back(player);
 		}
 	}
 	else
